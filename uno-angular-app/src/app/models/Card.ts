@@ -1,4 +1,4 @@
-export default class Card {
+export class Card {
     number: number = 1;
     color: string = "blue";
     type: string = ""

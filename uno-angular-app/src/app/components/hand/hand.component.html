@@ -1,2 +1,4 @@
 Total Cards:<span id="totalCards">{{total}}</span>
-<div class="card" *ngFor="let card of cards">{{card.number}}</div>
+<div class="container">
+    <app-card *ngFor="let card of cards" [card]="card"></app-card>
+</div>

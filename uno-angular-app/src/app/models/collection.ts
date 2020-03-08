@@ -1,6 +1,6 @@
-import Card from "@app/models/card";
+import {Card} from "@app/models/Card";
 
-class collection {
+export class collection {
     firstCard: Card;
     constructor() {
 
