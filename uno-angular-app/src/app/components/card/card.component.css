@@ -1,0 +1,17 @@
+.card {
+    display: inline-block;
+    width: 100px;
+    height: 150px;
+    margin: 5px;
+    border: solid gray 2px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.card:hover {
+    border: solid black 2px;
+}
+
+.card:focus {
+    border: solid black 2px;
+}
