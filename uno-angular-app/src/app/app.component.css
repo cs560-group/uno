@@ -1,6 +1,8 @@
-header {
-    text-align: center;
-    font-family: Arial;
+mat-toolbar {
+    display: flex;
+    background: dodgerblue;
+    color: white;
+    overflow: hidden;
 }
 
 footer {
@@ -11,4 +13,27 @@ footer {
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 15px;
+}
+
+a.menu-item {
+    margin: 5px 5px;        
+    text-decoration: none;
+}
+
+a:hover, a:focus {
+    text-decoration: underline;
+}
+
+a img:focus {
+    border: solid black 3px;
+    background: black;  
+}
+
+a:visited {
+    color: white;
+}
+
+#unoPicture {
+    width: 60px;
+    height: 60px;
 }
