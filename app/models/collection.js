@@ -89,8 +89,8 @@ class Deck extends Collection{
                     card = new Card(i, suit)
                     this.addCard(card)
                 }else{
-                    for(let j = 0; i < 2; i++){
-                        card = new Card(i, suit)
+                    for(let j = 0; j < 2; j++){
+                        card = new Card(j, suit)
                         this.addCard(card)
                     }
                 }
@@ -101,7 +101,7 @@ class Deck extends Collection{
     }
 
     /**
-     * Shuffles Cards
+     * Shuffles Collection
      */
     shuffle(){
         for(let i = this.cards.length-1; i > 0; i--){
