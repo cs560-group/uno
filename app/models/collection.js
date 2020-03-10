@@ -84,18 +84,31 @@ class Deck extends Collection{
         this.cards = []
         suits = ["red", "green", "yellow", "blue"]
         for(let suit of suits){
-            for(let i = 0; i < 10; i++){
-                if(i == 0){
-                    card = new Card(i, suit)
-                    this.addCard(card)
-                }else{
-                    for(let j = 0; j < 2; j++){
-                        card = new Card(j, suit)
-                        this.addCard(card)
-                    }
+            /**
+             * Initializes number cards for each suit
+             * 1 0-card
+             * 2 1-9-cards
+             */
+            this.addCard(new Card(0, suit))
+
+            for(let i = 1; i < 10; i++){
+                for(let j = 0; j < 2; j++){
+                    this.addCard(new Card(i, suit))
                 }
             }
+
+            /**
+             * Initialize Skip, Draw 2 and Reverse Cards for each suit
+             * 2 each
+             * *To be added*
+             */
         }
+
+        /**
+         * Initialize Wild cards and Wild Draw 4 cards
+         * 4 each
+         * *To be added*
+         */
 
         this.shuffle()
     }
