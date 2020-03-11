@@ -3,7 +3,7 @@ const Game = require('../models/game')
 
 let queue = []
 let games = {}
-let num_players = 1;
+let num_players = 4;
 
 const gameController = {}
 
