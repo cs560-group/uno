@@ -110,6 +110,25 @@ class Game{
     }
 
     /**
+     * Reads Card on top of discard and takes appropriate action if necessary
+     * *To be implemented*
+     */
+    readCard(){
+        let card = this.discard.getTopCard()
+        //Define behaviours
+    }
+
+    /**
+     * Determines if a card is a legal play, given the current gamestate
+     * *To be implemented*
+     * @param {Card} card 
+     */
+    isValid(card){
+        let top = this.discard.getTopCard()
+        return card.value === top.value || card.suit === top.suit || card.suit === 'wild'
+    }
+
+    /**
      * Sends top card of deck to player's hand
      * @param {Player} player 
      */
