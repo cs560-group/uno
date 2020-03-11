@@ -3,7 +3,7 @@ const Game = require('../models/game')
 
 let queue = []
 let games = {}
-let num_players = 4
+let num_players = 1;
 
 const gameController = {}
 
@@ -13,12 +13,13 @@ const gameController = {}
  * The game is also added to the games object with its id as the key.
  */
 gameController.handleConnection = (io, socket, name) => {
-    let player = new Player(socket.id, name)
+    const newPlayer = new Player(socket.id, name);
+    socket.emit("playerId", socket.id);
+    queue.push(newPlayer)
+    gameController.sendLobbyUpdate(io);
 
-    queue.push(player)
-
-    if(queue.length >= players){
-        let game = new Game(io)
+    if(queue.length >= num_players){
+        const game = new Game(io)
         game.genID()
 
         while(games[game.id]){
@@ -29,11 +30,16 @@ gameController.handleConnection = (io, socket, name) => {
         queue = queue.slice(num_players)
 
         for(player of players){
-            game.addPlayer(player)
+            game.addPlayer(player);
         }
 
         game.start()        
     }
+}
+
+gameController.sendLobbyUpdate = (io) => {
+    const lobbyState = queue.map(player => player.name);
+    queue.forEach(player => io.to(player.id).emit("lobbyUpdate", lobbyState));
 }
 
 module.exports = gameController

@@ -1,7 +1,6 @@
 const uuid = require('uuid/v4')
 
-const Collection = require('./collection').Collection
-const Deck = require('./collection').Deck
+const { Collection , Deck } = require('./collection')
 
 class Game{
     constructor(io){
@@ -12,15 +11,16 @@ class Game{
         this.players = []
         
         this.turn = 0
-        this.turnPlayer = null
+        this.currentIndex = 0;
 
-        this.direction = 0
+        this.direction = 1
         this.skip = false
 
         this.deck = new Deck()
         this.discard = new Collection()
 
-        this.timer = 30
+        this.turnDuration = 30;
+        this.turnSecondsRemaining = this.turnDuration;
     }
 
     genID(){
@@ -36,37 +36,36 @@ class Game{
      * Broadcasts start event to players
      */
     start(){
-        //arrange players into 'ring'
-        for(let i = 0; i < this.players.length; i++){
-            let player = this.players[i]  
-            if(i === this.players.length - 1){
-                player.addRight(this.players[0])
-            }else{
-                let next = this.players[i + 1]
-                player.addLeft(next)   
-            }
-        }
-
         //randomly select first player
-        this.turnPlayer = this.players[Math.random(Math.floor(this.players.length))]
+        //this.turnPlayer =  this.players[Math.random(Math.floor(this.players.length))];
+        this.dealInitialHands();
+        this.broadcast("start");
+        this.updatePlayersState();
+    }
 
-        //Top card from deck goes to discard pile
-        this.discard()
+    broadcast(event, data={}) {
+        this.players.forEach(player => this.io.to(player.id).emit(event, data));
+    }
 
-        //Deal starting hands to players
-        let count = 0
-        let player = this.turnPlayer
-        while(count < this.players.length * 7){
-            this.deal(player)
-            player = player.left
-        }
+    emitTo(player, event, data) {
+        this.io.to(player.id).emit(event, data);
+    }
 
-        //Start Countdown
-        this.countdown()
+    updatePlayersState() {
+        this.players.forEach(player => {
+            let gameState = this.getState();
+            gameState.currentPlayer = this.getCurrentPlayer().getPublicState();
+            gameState.private = player.getPrivateState();
+            this.emitTo(player, "update", gameState);
+        })
+    }
 
-        //Broadcast start event to all players
-        for(let player of this.players){
-            this.io.to(player.io).emit('start')
+    dealInitialHands() {
+        const cardsPerPlayer = 7;
+        const totalCardsToDeal = this.players.length * cardsPerPlayer;
+        for (let i = 0; i < totalCardsToDeal; i++){
+            this.dealCurrentPlayer();
+            this.updateCurrentPlayer();
         }
     }
     
@@ -75,38 +74,39 @@ class Game{
      * Automatically goes to the next turn if it reaches 0.
      */
     countdown(){
+        const oneSecond = 1000;
         setInterval(() => {
-            this.timer --
-            this.io.emit('countdown', this.timer)
-            if(this.timer === 0){
+            this.io.emit('countdown', this.turnSecondsRemaining)
+            if(this.turnSecondsRemaining <= 0) {
                 //Current player draws if the timer goes to 0 
                 this.deck.sendCard(0, this.turnPlayer.hand)
-                this.nextTurn()
+                this.updateCurrentPlayer()
+                this.resetCountdownTimer();
             }
-        }, 1000);
+            --this.turnSecondsRemaining;
+        }, oneSecond);
+    }
+
+    resetCountdownTimer() {
+        this.turnSecondsRemaining = this.turnDuration;
+    }
+
+    updateCurrentPlayer() {
+        this.getCurrentPlayer().myTurn = false;
+        this.updateCurrentIndex();
+        this.getCurrentPlayer().myTurn = true;
     }
 
     /**
      * Determines and sets the next player and resets play timer
      */
-    nextTurn(){
-        this.turnPlayer.myTurn = false
-        if(this.direction === 0){
-            if(this.skip){
-                this.turnPlayer = this.turnPlayer.left.left               
-            }else{
-                this.turnPlayer = this.turnPlayer.left
-            }            
-        }else{
-            if(this.skip){
-                this.turnPlayer = this.turnPlayer.right.right
-            }else{
-                this.turnPlayer = this.turnPlayer.right
-            }  
-        }     
-        this.skip = false
-        this.turnPlayer.myTurn = true  
-        this.timer = 30
+    updateCurrentIndex(){
+        const currentPlayer = this.getCurrentPlayer();
+        this.currentIndex = this.getNextIndex();
+    }
+
+    getNextIndex() {
+        return ++this.currentIndex % this.players.length;
     }
 
     /**
@@ -136,6 +136,10 @@ class Game{
         this.deck.sendCard(0, player.hand)
     }
 
+    dealCurrentPlayer() {
+        this.deal(this.getCurrentPlayer());
+    }
+
     /**
      * Sends top card of deck to top of discard pile
      */
@@ -161,21 +165,16 @@ class Game{
                 cards: this.discard.getState(true),
                 top: this.discard.getTopCard()
             },
-            deck: this.deck.getState()
+            deck: this.deck.getState(),
+            players: this.players.map(player => player.getPublicState())
         }
     }
 
-    /**
-     * Sends player-specific gamestate to each player
-     */
-    update(){
-        let game = this.getState()
-        for(player of this.players){
-            let data = player.getState(true)
-            data.game = game
-            this.io.to(player.id).emit('update', data)
-        }
-    }    
+    getCurrentPlayer() {
+        const currentPlayer = this.players[this.currentIndex];
+        currentPlayer.myTurn = true;
+        return currentPlayer;
+    }
 }
 
-module.exports = Game
+module.exports = Game;
