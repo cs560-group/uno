@@ -2,7 +2,9 @@ class Card{
     constructor(value, suit){        
         this.value = value
         this.suit = suit
-        this.artwork = `/assets/card/${suit}-${value}.png`
+        this.artwork = `/assets/card/${suit}-${value}.png`,
+        this.type = "";
+        this.isWild = false;
     }
 
     /**
@@ -12,7 +14,9 @@ class Card{
         return {
             value: this.value,
             suit: this.suit,
-            artwork: this.artwork
+            artwork: this.artwork,
+            type: this.type,
+            isWild: this.isWild
         }
     }
 }

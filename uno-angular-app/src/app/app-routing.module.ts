@@ -5,7 +5,7 @@ import { GameComponent } from '@app/components/game/game.component';
 
 const routes: Routes = [
   { path: "lobby/:username", component: LobbyComponent },
-  { path: "game", component: GameComponent },
+  { path: "game/:id", component: GameComponent },
 ];
 
 @NgModule({
