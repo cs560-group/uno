@@ -6,20 +6,14 @@ import { Injectable } from '@angular/core';
     providedIn: "root"
 })
 export class GameService {
-    public playerCount: number = 0;
+    public state: any;
+    
 
-    constructor(private socket: Socket) {}
-
-    public connect(username): void {
-        this.socket.connect();
-        this.socket.emit("newplayer", username);
-        this.socket.on("lobbyUpdate", (playerCount) => {
-            this.playerCount = playerCount;
-            console.log("lobby update", this.playerCount);
-        });
+    constructor(private socket: Socket) {
+        this.socket.on("update", (data) => {this.state = data; console.log(this.state); });
     }
 
-    public disonnect(): void {
-        this.socket.disconnect();
+    currentPlayer() {
+        return this.state ? this.state.currentPlayer.name : "";
     }
 }

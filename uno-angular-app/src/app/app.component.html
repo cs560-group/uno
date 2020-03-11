@@ -3,7 +3,17 @@
         <img id="unoPicture" src="https://www.nintendo.com/content/dam/noa/en_US/games/switch/u/uno-for-nintendo-switch/Switch_UNO_description-char.png"
             alt="The word UNO with cards behind it.">
     </a>
-    <a class="menu-item" mat-menu-item routerLink="/lobby" routerLinkActive="active">Join a game</a>
     <a class="menu-item" mat-menu-item href="https://service.mattel.com/instruction_sheets/42001pr.pdf" target="_blank">Rules</a>
 </mat-toolbar>
-<router-outlet></router-outlet>
+
+<form class="form">
+    <div class="form-group">
+        <label for="username">Username:</label>
+        <input name="username" type="text" [(ngModel)]="username">
+    </div>
+        <a [routerLink]="['/lobby', username]" routerLinkActive="active">    <button [disabled]="!this.username || this.username.length === 0">Join Lobby</button>
+        </a>
+</form>
+
+<router-outlet>
+</router-outlet>

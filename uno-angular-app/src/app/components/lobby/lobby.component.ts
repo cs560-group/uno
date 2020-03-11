@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { GameService } from '@app/services/game.service';
+import { Component, OnInit, Input } from '@angular/core';
+import { Socket } from 'ngx-socket-io';
+import { AppRoutingModule } from '@app/app-routing.module';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-lobby',
@@ -7,16 +9,24 @@ import { GameService } from '@app/services/game.service';
   styleUrls: ['./lobby.component.css']
 })
 export class LobbyComponent implements OnInit {
-  private username: string;
+  username: string = "";
+  private id: string = "";
 
-  constructor(private gameService: GameService) { }
+  private playerCount: number = 0;
+
+  constructor(private socket: Socket, private router: Router, private activeRoute: ActivatedRoute) {}
 
   ngOnInit() {
+    this.socket.on("playerId", assignedId => this.id = assignedId);
+    this.socket.on("lobbyUpdate", data => this.playerCount = data.playerCount);
+    this.socket.on("start", () => this.router.navigate(["game"]));
+    this.activeRoute.params.subscribe(params => {
+      this.username = params.username;
+      this.joinLobby();
+    });
   }
 
   joinLobby() {
-    console.log(`Joining lobby as ${this.username}`);
-      this.gameService.connect(this.username);
+    this.socket.emit("newplayer", this.username);
   }
-
 }

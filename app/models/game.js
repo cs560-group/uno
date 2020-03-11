@@ -38,14 +38,26 @@ class Game{
     start(){
         //randomly select first player
         //this.turnPlayer =  this.players[Math.random(Math.floor(this.players.length))];
-        const currentPlayer = this.getCurrentPlayer();
-        //Start Countdown
-        this.countdown()
+        this.dealInitialHands();
+        this.broadcast("start");
+        this.updatePlayersState();
+    }
 
-        //Broadcast start event to all players
-        for(let player of this.players){
-            this.io.to(player.io).emit('start')
-        }
+    broadcast(event, data={}) {
+        this.players.forEach(player => this.io.to(player.id).emit(event, data));
+    }
+
+    emitTo(player, event, data) {
+        this.io.to(player.id).emit(event, data);
+    }
+
+    updatePlayersState() {
+        this.players.forEach(player => {
+            let gameState = this.getState();
+            gameState.currentPlayer = this.getCurrentPlayer().getPublicState();
+            gameState.private = player.getPrivateState();
+            this.emitTo(player, "update", gameState);
+        })
     }
 
     dealInitialHands() {
@@ -80,7 +92,7 @@ class Game{
     }
 
     updateCurrentPlayer() {
-        currentPlayer.myTurn = false;
+        this.getCurrentPlayer().myTurn = false;
         this.updateCurrentIndex();
         this.getCurrentPlayer().myTurn = true;
     }
@@ -106,7 +118,7 @@ class Game{
     }
 
     dealCurrentPlayer() {
-        this.deal(this.currentPlayer());
+        this.deal(this.getCurrentPlayer());
     }
 
     /**
@@ -134,23 +146,15 @@ class Game{
                 cards: this.discard.getState(true),
                 top: this.discard.getTopCard()
             },
-            deck: this.deck.getState()
+            deck: this.deck.getState(),
+            players: this.players.map(player => player.getPublicState())
         }
     }
 
-    /**
-     * Sends player-specific gamestate to each player
-     */
-    update(){
-        let game = this.getState()
-        for(player of this.players){
-            let data = player.getState(true)
-            data.game = game
-        }
-    }    
-
     getCurrentPlayer() {
-        return this.players[this.currentIndex];
+        const currentPlayer = this.players[this.currentIndex];
+        currentPlayer.myTurn = true;
+        return currentPlayer;
     }
 }
 

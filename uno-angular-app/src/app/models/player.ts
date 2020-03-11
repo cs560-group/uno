@@ -1,9 +1,8 @@
 import { Card } from '@app/models/Card';
 
 export class Player {
-    id: number;
-    cards: Card[];
-    constructor(id: number) {
+    private cards: Card[] = [];
+    constructor(private id: number, ) {
         this.id = id;
     }
 }
