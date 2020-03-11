@@ -1,12 +1,12 @@
 export class Card {
-    number: number = 1;
-    color: string = "blue";
+    value: number = 1;
+    suit: string = "blue";
     type: string = ""
     isWild: boolean = false;
 
     constructor(number: number, color: string, type: string, isWild: boolean) {
-        this.number = number;
-        this.color = color;
+        this.value = number;
+        this.suit = color;
         this.type = type;
         this.isWild = isWild
     }

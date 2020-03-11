@@ -36,10 +36,9 @@ class Game{
      * Broadcasts start event to players
      */
     start(){
-        //randomly select first player
-        //this.turnPlayer =  this.players[Math.random(Math.floor(this.players.length))];
         this.dealInitialHands();
-        this.broadcast("start");
+        this.broadcast("start", this.id);
+        this.setCurrentIndexRandomly();
         this.updatePlayersState();
     }
 
@@ -168,6 +167,11 @@ class Game{
             deck: this.deck.getState(),
             players: this.players.map(player => player.getPublicState())
         }
+    }
+
+    setCurrentIndexRandomly() {
+        this.currentIndex = Math.round(Math.random() & this.players.length);
+        console.log(this.currentIndex);
     }
 
     getCurrentPlayer() {

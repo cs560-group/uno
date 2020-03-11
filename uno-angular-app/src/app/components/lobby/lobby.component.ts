@@ -21,7 +21,7 @@ export class LobbyComponent implements OnInit {
     this.socket.on("lobbyUpdate", data => {
       this.players = data;
     });
-    this.socket.on("start", () => this.router.navigate(["game"]));
+    this.socket.on("start", (gameId) => this.router.navigate(["game", gameId]));
   }
 
   joinLobby() {

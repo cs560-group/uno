@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import {Card} from "@app/models/card";
-import { CardService } from '@app/services/card.service';
+import { GameService } from '@app/services/game.service';
 
 @Component({
   selector: 'app-hand',
@@ -8,13 +8,12 @@ import { CardService } from '@app/services/card.service';
   styleUrls: ['./hand.component.css']
 })
 export class HandComponent implements OnInit {
-  public total: number;
-  public cards: Card[];
+  public cards;
 
-  constructor(private cardService: CardService) { }
+  constructor(private gameService: GameService) { }
 
   ngOnInit() {
-    this.cards = this.cardService.getStubbedCards(24);
-    this.total = this.cards.length;
+    this.cards = this.gameService.cards;
+    this.cards = this.gameService.getCardsInHand();
   }
 }
