@@ -7,5 +7,4 @@ import { Card } from "@app/models/card";
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'uno-angular-app';
 }

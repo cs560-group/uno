@@ -3,7 +3,7 @@ const Game = require('../models/game')
 
 let queue = []
 let games = {}
-let num_players = 4;
+let num_players = 1;
 
 const gameController = {}
 
@@ -38,7 +38,8 @@ gameController.handleConnection = (io, socket, name) => {
 }
 
 gameController.sendLobbyUpdate = (io) => {
-    queue.forEach(player => io.to(player.id).emit("lobbyUpdate", { playerCount: queue.length }));
+    const lobbyState = queue.map(player => player.name);
+    queue.forEach(player => io.to(player.id).emit("lobbyUpdate", lobbyState));
 }
 
 module.exports = gameController

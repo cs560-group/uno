@@ -1,7 +1,13 @@
-<div>
-    Your ID is: {{id}}
-    Finding players for a game...
-    <div>Found {{playerCount}} players.</div>
-</div>
+<form class="form">
+    <div class="form-group">
+        <label for="username">Username:</label>
+        <input name="username" type="text" [(ngModel)]="username">
+    </div>
+    <button (click)="joinLobby()" [disabled]="this.hasJoined || !this.username || this.username.length === 0">Set Display Name</button>
+</form>
+<label>Lobby Members:</label>
+<ul>
+    <li *ngFor="let player of players">{{player}}</li>
+</ul>
 
 <router-outlet></router-outlet>
