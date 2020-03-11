@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { GameService } from '@app/services/game.service';
-import { Game } from '@app/models/game';
 
 @Component({
   selector: 'app-lobby',
@@ -8,9 +7,16 @@ import { Game } from '@app/models/game';
   styleUrls: ['./lobby.component.css']
 })
 export class LobbyComponent implements OnInit {
+  private username: string;
 
   constructor(private gameService: GameService) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+  }
+
+  joinLobby() {
+    console.log(`Joining lobby as ${this.username}`);
+      this.gameService.connect(this.username);
+  }
 
 }

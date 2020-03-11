@@ -4,28 +4,8 @@ class Player{
     constructor(id, name, right=null, left=null){
         this.id = id
         this.name = name
-        this.right = right
-        this.left = left
         this.hand = new Collection()
         this.myTurn = false
-    }
-
-    /**
-     * Adds Player to the Left
-     * @param {Player} player : player to be added 
-     */
-    addLeft(player){
-        this.left = player
-        player.right = this
-    }
-
-    /**
-     * Adds Player to the Right
-     * @param {Player} player 
-     */
-    addRight(player){
-        this.right = player
-        player.left = this
     }
 
     /**
@@ -58,3 +38,5 @@ class Player{
         }
     }
 }
+
+module.exports = Player;

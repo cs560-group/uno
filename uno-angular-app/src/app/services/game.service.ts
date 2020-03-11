@@ -10,17 +10,16 @@ export class GameService {
 
     constructor(private socket: Socket) {}
 
-    public connect(): void {
+    public connect(username): void {
         this.socket.connect();
-        console.log("connecting...");
-        this.socket.on("players", (playerCount) => {
-            console.log(playerCount);
+        this.socket.emit("newplayer", username);
+        this.socket.on("lobbyUpdate", (playerCount) => {
             this.playerCount = playerCount;
-            console.log(this.playerCount);
+            console.log("lobby update", this.playerCount);
         });
     }
 
-    public disonncect(): void {
+    public disonnect(): void {
         this.socket.disconnect();
     }
 }

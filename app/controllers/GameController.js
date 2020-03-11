@@ -16,8 +16,9 @@ gameController.handleConnection = (io, socket, name) => {
     let player = new Player(socket.id, name)
 
     queue.push(player)
+    gameController.sendLobbyUpdate(io);
 
-    if(queue.length >= players){
+    if(queue.length >= num_players){
         let game = new Game(io)
         game.genID()
 
@@ -34,6 +35,12 @@ gameController.handleConnection = (io, socket, name) => {
 
         game.start()        
     }
+}
+
+gameController.sendLobbyUpdate = (io) => {
+    queue.forEach(player => {
+        io.to(player.id).emit("lobbyUpdate", queue.length)
+    });
 }
 
 module.exports = gameController

@@ -7,9 +7,8 @@ const io = require('socket.io')(http)
 
 io.setMaxListeners(0)
 app.use(express.static('app/static'))
-app.use(require('./app/routes'))
 
-const gameController = require('./app/controllers/GameController')
+const gameController = require('./controllers/GameController')
 
 //socket connection handlers
 io.on('connection', socket => {
@@ -17,7 +16,7 @@ io.on('connection', socket => {
         gameController.handleConnection(io, socket, name)
     })
 })
-
-http.listen(process.env.PORT, () => {
-    console.log("server started on port ", process.env.PORT)
+const port = process.env.PORT || 8080
+http.listen(port, () => {
+    console.log("server started on port", port)
 })

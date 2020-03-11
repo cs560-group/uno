@@ -1,7 +1,6 @@
 const uuid = require('uuid/v4')
 
-const Collection = require('./collection').Collection
-const Deck = require('./collection').Deck
+const { Collection , Deck } = require('./collection')
 
 class Game{
     constructor(io){
@@ -12,15 +11,16 @@ class Game{
         this.players = []
         
         this.turn = 0
-        this.turnPlayer = null
+        this.currentIndex = 0;
 
-        this.direction = 0
+        this.direction = 1
         this.skip = false
 
         this.deck = new Deck()
         this.discard = new Collection()
 
-        this.timer = 30
+        this.turnDuration = 30;
+        this.turnSecondsRemaining = this.turnDuration;
     }
 
     genID(){
@@ -36,32 +36,9 @@ class Game{
      * Broadcasts start event to players
      */
     start(){
-        //arrange players into 'ring'
-        for(let i = 0; i < this.players.length; i++){
-            let player = this.players[i]
-            let next = this.players[i + 1]
-            player.addLeft(next)     
-
-            if(i === this.players.length - 1){
-                player.addRight(this.players[0])
-            }
-        }
-
         //randomly select first player
-        this.turnPlayer =  this.players[Math.random(Math.floor(this.players.length))]
-
-        //Top card from deck goes to discard pile
-        this.discard()
-
-        //Deal starting hands to players
-        let count = 0
-        while(count < this.players.length * 7){
-            player = this.turnPlayer
-            this.deal(player)
-
-            player = player.left
-        }
-
+        //this.turnPlayer =  this.players[Math.random(Math.floor(this.players.length))];
+        const currentPlayer = this.getCurrentPlayer();
         //Start Countdown
         this.countdown()
 
@@ -70,44 +47,54 @@ class Game{
             this.io.to(player.io).emit('start')
         }
     }
+
+    dealInitialHands() {
+        const cardsPerPlayer = 7;
+        const totalCardsToDeal = this.players.length * cardsPerPlayer;
+        for (let i = 0; i < totalCardsToDeal; i++){
+            this.dealCurrentPlayer();
+            this.updateCurrentPlayer();
+        }
+    }
     
     /**
      * Counts down play timer, and broadcasts timer to all players. 
      * Automatically goes to the next turn if it reaches 0.
      */
     countdown(){
+        const oneSecond = 1000;
         setInterval(() => {
-            this.timer --
-            this.io.emit('countdown', this.timer)
-            if(this.timer === 0){
+            this.io.emit('countdown', this.turnSecondsRemaining)
+            if(this.turnSecondsRemaining <= 0) {
                 //Current player draws if the timer goes to 0 
                 this.deck.sendCard(0, this.turnPlayer.hand)
-                this.nextTurn()
+                this.updateCurrentPlayer()
+                this.resetCountdownTimer();
             }
-        }, 1000);
+            --this.turnSecondsRemaining;
+        }, oneSecond);
+    }
+
+    resetCountdownTimer() {
+        this.turnSecondsRemaining = this.turnDuration;
+    }
+
+    updateCurrentPlayer() {
+        currentPlayer.myTurn = false;
+        this.updateCurrentIndex();
+        this.getCurrentPlayer().myTurn = true;
     }
 
     /**
      * Determines and sets the next player and resets play timer
      */
-    nextTurn(){
-        this.turnPlayer.myTurn = false
-        if(this.direction === 0){
-            if(this.skip){
-                this.turnPlayer = this.turnPlayer.left.left
-            }else{
-                this.turnPlayer = this.turnPlayer.left
-            }            
-        }else{
-            if(this.skip){
-                this.turnPlayer = this.turnPlayer.right.right
-            }else{
-                this.turnPlayer = this.turnPlayer.right
-            }  
-        }     
+    updateCurrentIndex(){
+        const currentPlayer = this.getCurrentPlayer();
+        this.currentIndex = this.getNextIndex();
+    }
 
-        this.turnPlayer.myTurn = true  
-        this.timer = 30
+    getNextIndex() {
+        return ++this.currentIndex % this.players.length;
     }
 
     /**
@@ -116,6 +103,10 @@ class Game{
      */
     deal(player){
         this.deck.sendCard(0, player.hand)
+    }
+
+    dealCurrentPlayer() {
+        this.deal(this.currentPlayer());
     }
 
     /**
@@ -155,7 +146,12 @@ class Game{
         for(player of this.players){
             let data = player.getState(true)
             data.game = game
-            this.io.to(player.id).emit('update', data)
         }
     }    
+
+    getCurrentPlayer() {
+        return this.players[this.currentIndex];
+    }
 }
+
+module.exports = Game;

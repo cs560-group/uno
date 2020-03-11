@@ -1,2 +1,7 @@
+<div class="form-group">
+    <label for="username">Username:</label>
+    <input name="username" type="text" [(ngModel)]="username">
+    <button (click)="joinLobby()" [disabled]="!this.username || this.username.length === 0">Join Lobby</button>
+</div>
 Finding players for a game...
 <div>Found {{this.gameService.playerCount}} players.</div>

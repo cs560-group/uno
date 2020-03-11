@@ -14,7 +14,7 @@ import { GameService } from '@app/services/game.service';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { FormsModule } from '@angular/forms';
 
-const config: SocketIoConfig = { url: 'http://localhost:3000', options: {} };
+const config: SocketIoConfig = { url: 'http://localhost:8080', options: {} };
 const appRoutes: Routes = [
   { path: 'lobby', component: LobbyComponent }
 ];
