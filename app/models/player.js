@@ -34,8 +34,8 @@ class Player{
      */
     getState(all=false){
         if(all){
+            let players =  []
             if(player.left){
-                let players = []
                 let player = this
                 while(player.id !== this.right.id){
                     player = player.left
@@ -58,3 +58,5 @@ class Player{
         }
     }
 }
+
+module.exports = Player

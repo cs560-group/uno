@@ -38,27 +38,26 @@ class Game{
     start(){
         //arrange players into 'ring'
         for(let i = 0; i < this.players.length; i++){
-            let player = this.players[i]
-            let next = this.players[i + 1]
-            player.addLeft(next)     
-
+            let player = this.players[i]  
             if(i === this.players.length - 1){
                 player.addRight(this.players[0])
+            }else{
+                let next = this.players[i + 1]
+                player.addLeft(next)   
             }
         }
 
         //randomly select first player
-        this.turnPlayer =  this.players[Math.random(Math.floor(this.players.length))]
+        this.turnPlayer = this.players[Math.random(Math.floor(this.players.length))]
 
         //Top card from deck goes to discard pile
         this.discard()
 
         //Deal starting hands to players
         let count = 0
+        let player = this.turnPlayer
         while(count < this.players.length * 7){
-            player = this.turnPlayer
             this.deal(player)
-
             player = player.left
         }
 
@@ -94,7 +93,7 @@ class Game{
         this.turnPlayer.myTurn = false
         if(this.direction === 0){
             if(this.skip){
-                this.turnPlayer = this.turnPlayer.left.left
+                this.turnPlayer = this.turnPlayer.left.left               
             }else{
                 this.turnPlayer = this.turnPlayer.left
             }            
@@ -105,9 +104,28 @@ class Game{
                 this.turnPlayer = this.turnPlayer.right
             }  
         }     
-
+        this.skip = false
         this.turnPlayer.myTurn = true  
         this.timer = 30
+    }
+
+    /**
+     * Reads Card on top of discard and takes appropriate action if necessary
+     * *To be implemented*
+     */
+    readCard(){
+        let card = this.discard.getTopCard()
+        //Define behaviours
+    }
+
+    /**
+     * Determines if a card is a legal play, given the current gamestate
+     * *To be implemented*
+     * @param {Card} card 
+     */
+    isValid(card){
+        let top = this.discard.getTopCard()
+        return card.value === top.value || card.suit === top.suit || card.suit === 'wild'
     }
 
     /**
@@ -159,3 +177,5 @@ class Game{
         }
     }    
 }
+
+module.exports = Game
