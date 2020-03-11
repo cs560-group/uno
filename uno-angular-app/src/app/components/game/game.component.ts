@@ -8,10 +8,12 @@ import { GameService } from '@app/services/game.service';
   styleUrls: ['./game.component.css']
 })
 export class GameComponent implements OnInit {
+  private currentPlayer: string = "";
 
   constructor(private gameService: GameService) { }
 
   ngOnInit() {
+    this.gameService.currentPlayer.subscribe(player => this.currentPlayer = player);
   }
 
 }

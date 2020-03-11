@@ -4,7 +4,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HandComponent } from '@app/components/hand/hand.component';
 import { CardComponent } from '@app/components/card/card.component';
-import { CardService } from '@app/services/card.service';
 import { LobbyComponent } from '@app/components/lobby/lobby.component';
 import { Routes, RouterModule } from '@angular/router';
 import {MatToolbarModule} from '@angular/material/toolbar';
@@ -39,7 +38,7 @@ const appRoutes: Routes = [
     FormsModule,
     SocketIoModule.forRoot(config)
   ],
-  providers: [CardService, GameService],
+  providers: [GameService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

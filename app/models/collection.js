@@ -30,7 +30,7 @@ class Collection{
      * @param {Number} index : index of card to be removed
      */
     removeCard(index){
-        return this.cards.splice(index, 1)
+        return this.cards.splice(index, 1)[0];
     }
 
     /**
