@@ -1,7 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from "@angular/platform-browser"
 import { HandComponent } from './hand.component';
-import Card from '@app/models/card';
+import { Card } from '@app/models/card';
+import { CardComponent } from '../card/card.component';
+import { Socket } from 'ngx-socket-io';
 
 describe('The HandComponent', () => {
   let component: HandComponent;
@@ -9,7 +11,8 @@ describe('The HandComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ HandComponent ]
+      declarations: [ HandComponent, CardComponent ],
+      providers: [Socket]
     })
     .compileComponents();
   }));
@@ -25,10 +28,10 @@ describe('The HandComponent', () => {
   });
 
   it("should display the total number of cards in the player's hand", () => {
-    component.total = 3
+    component.cards = [new Card(1, "", "", false), new Card(2, "", "", false)]
     const totalElement = fixture.debugElement.query(By.css("#totalCards")).nativeElement;
     fixture.detectChanges();
-    expect(totalElement.innerHTML).toEqual("3");
+    expect(totalElement.innerHTML).toEqual("2");
   });
 
   it("should display each card in the player's hand", () => {

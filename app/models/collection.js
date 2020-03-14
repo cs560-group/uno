@@ -8,7 +8,7 @@ class Collection{
     /**
      * Number of cards in Collection
      */
-    cardCount(){
+    count(){
         return this.cards.length
     }
 
@@ -34,21 +34,23 @@ class Collection{
     }
 
     /**
-     * Sends card tp another collection
+     * Sends card to another collection
      * @param {Number} index : index of card to be sent
-     * @param {Collection} collection : destination Collection
+     * @param {Collection} destination : destination Collection
      * @param {Boolean} toTop : true if card should be added on top of Collection
-     */
+     * @returns {Card} : A copy of the card sent.
+    */
     sendCard(index, collection, toTop=false){
-        let card = this.removeCard(index)
-        collection.addCard(card, toTop)        
+        const cardToSend = this.removeCard(index)
+        collection.addCard(cardToSend, toTop)   
+        return Object.assign(new Card(0, ""), cardToSend);   
     }
 
     /**
      * Returns top card of collection
      */
     getTopCard(){
-        return this.cards[0]
+        return this.cards[0];
     }
 
     /**
@@ -59,20 +61,19 @@ class Collection{
         if(all){
             return{
                 cards: this.cards,
-                count: this.cardCount
+                count: this.count
             }
         }else{
             return{
-                count: this.cardCount
+                count: this.count
             }
         }
     }
 }
 
 class Deck extends Collection{
-    constructor(){
-        super()
-        this.initDeck()
+    constructor(cards = []){
+        super(cards);
     }
 
     /**
@@ -117,12 +118,29 @@ class Deck extends Collection{
      * Shuffles Collection
      */
     shuffle(){
-        for(let i = this.cards.length-1; i > 0; i--){
+        for(let i = this.cards.length-1; i > 0; i--) {
             const j = Math.floor(Math.random() * i)
             const temp = this.cards[i]
             this.cards[i] = this.cards[j]
             this.cards[j] = temp
-          } 
+        } 
+    }
+
+    /**
+     * @returns A copy of the top card.
+     */
+    peekTop() {
+        return Object.assign(new Card("", ""), this.getTopCard());
+    }
+
+    /**
+     * 
+     * @param {Collection} destination 
+     * @param {Boolean} toTop 
+     * @returns {Card} A copy of the card sent.
+     */
+    sendTop(destination, toTop = false) {
+        return this.sendCard(0, destination, toTop);
     }
 }
 

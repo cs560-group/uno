@@ -1,34 +1,26 @@
-const uuid = require('uuid/v4')
-
 const { Collection , Deck } = require('./collection')
 
 class Game{
-    constructor(io){
-
+    constructor(id, io, deck, discard){
+        this.id = id;
         this.io = io
-        this.id = 0
-
+        this.deck = deck;
+        this.discards = discard;
         this.players = []
-        
         this.turn = 0
         this.currentIndex = 0;
-
         this.direction = 1
         this.skip = false
-
-        this.deck = new Deck()
-        this.discard = new Collection()
-
         this.turnDuration = 30;
         this.turnSecondsRemaining = this.turnDuration;
     }
 
-    genID(){
-        this.id = uuid()
-    }
-
     addPlayer(player){
         this.players.push(player)
+    }
+
+    addAllPlayers(players) {
+        players.forEach(player => this.addPlayer(player));
     }
 
     /**
@@ -37,6 +29,7 @@ class Game{
      */
     start(){
         this.dealInitialHands();
+        this.discardTopOfDeck();
         this.broadcast("start", this.id);
         this.setCurrentIndexRandomly();
         this.updatePlayersState();
@@ -62,9 +55,9 @@ class Game{
     dealInitialHands() {
         const cardsPerPlayer = 7;
         const totalCardsToDeal = this.players.length * cardsPerPlayer;
-        for (let i = 0; i < totalCardsToDeal; i++){
+        for (let i = 0; i < totalCardsToDeal; i++) {
             this.dealCurrentPlayer();
-            this.updateCurrentPlayer();
+            this.endCurrentTurn();
         }
     }
     
@@ -91,7 +84,6 @@ class Game{
     }
 
     updateCurrentPlayer() {
-        this.getCurrentPlayer().myTurn = false;
         this.updateCurrentIndex();
         this.getCurrentPlayer().myTurn = true;
     }
@@ -100,8 +92,11 @@ class Game{
      * Determines and sets the next player and resets play timer
      */
     updateCurrentIndex(){
-        const currentPlayer = this.getCurrentPlayer();
         this.currentIndex = this.getNextIndex();
+    }
+
+    setCurrentIndexRandomly() {
+        this.currentIndex = Math.round(Math.random() & this.players.length);
     }
 
     getNextIndex() {
@@ -109,41 +104,26 @@ class Game{
     }
 
     /**
-     * Reads Card on top of discard and takes appropriate action if necessary
-     * *To be implemented*
+     * @returns A copy of the dealt card
      */
-    readCard(){
-        let card = this.discard.getTopCard()
-        //Define behaviours
-    }
-
-    /**
-     * Determines if a card is a legal play, given the current gamestate
-     * *To be implemented*
-     * @param {Card} card 
-     */
-    isValid(card){
-        let top = this.discard.getTopCard()
-        return card.value === top.value || card.suit === top.suit || card.suit === 'wild'
+    dealCurrentPlayer() {
+        return this.deal(this.getCurrentPlayer());
     }
 
     /**
      * Sends top card of deck to player's hand
      * @param {Player} player 
+     * @returns A copy of the dealt card
      */
     deal(player){
-        this.deck.sendCard(0, player.hand)
-    }
-
-    dealCurrentPlayer() {
-        this.deal(this.getCurrentPlayer());
+        return this.deck.sendTop(player.hand, false);
     }
 
     /**
      * Sends top card of deck to top of discard pile
      */
-    discard(){
-        this.deck.sendCard(0, this.discard, true)
+    discardTopOfDeck(){
+        this.deck.sendTop(this.discards, true)
     }
 
     /**
@@ -161,22 +141,35 @@ class Game{
         return {
             id: this.id,
             discard: { 
-                cards: this.discard.getState(true),
-                top: this.discard.getTopCard()
+                cards: this.discards.getState(true),
+                top: this.discards.peekTop()
             },
             deck: this.deck.getState(),
             players: this.players.map(player => player.getPublicState())
         }
     }
 
-    setCurrentIndexRandomly() {
-        this.currentIndex = Math.round(Math.random() & this.players.length);
-    }
-
     getCurrentPlayer() {
         const currentPlayer = this.players[this.currentIndex];
         currentPlayer.myTurn = true;
         return currentPlayer;
+    }
+
+    passCurrentTurn() {
+        const dealtCard = this.dealCurrentPlayer();
+        if (!this.isPlayable(dealtCard))
+            this.endCurrentTurn();
+        this.updatePlayersState();
+    }
+
+    isPlayable(card) {
+        const lastPlayedCard = this.discards.peekTop();
+        return lastPlayedCard === undefined || card.isLike(lastPlayedCard);
+    }
+
+    endCurrentTurn() {
+        this.getCurrentPlayer().myTurn = false;
+        this.updateCurrentPlayer();
     }
 }
 

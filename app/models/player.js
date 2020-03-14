@@ -22,6 +22,7 @@ class Player{
 
     getPrivateState() {
         return {
+            id: this.id,
             name: this.namme,
             hand: this.hand.getState(true),
             myTurn: this.myTurn

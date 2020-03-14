@@ -4,7 +4,7 @@
   "description": "Node.js server app for the uno app.",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jasmine",
     "start": "node server.js"
   },
   "author": "",
@@ -14,5 +14,8 @@
     "express": "^4.17.1",
     "socket.io": "^2.3.0",
     "uuid": "^7.0.2"
+  },
+  "devDependencies": {
+    "jasmine": "^3.5.0"
   }
 }

@@ -8,14 +8,18 @@ const io = require('socket.io')(http)
 io.setMaxListeners(0)
 app.use(express.static('app/static'))
 
-const gameController = require('./controllers/GameController')
+const lobbyController = require('./controllers/lobbyController');
+const gameController = require("./controllers/gameController");
+
+lobbyController.initialize(io, gameController.createAndStartGame);
 
 //socket connection handlers
-io.on('connection', socket => {
-    socket.on('newplayer', name => {
-        gameController.handleConnection(io, socket, name)
-    })
-})
+io.on('connection', socket => addSocketListeners(socket));
+
+function addSocketListeners(socket) {
+    lobbyController.addSocketListeners(socket);
+    gameController.addSocketListeners(socket);
+}
 
 const port = process.env.PORT || 8080
 http.listen(port, () => {

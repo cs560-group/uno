@@ -1,4 +1,5 @@
-Total Cards:<span id="totalCards">{{total}}</span>
+Total Cards:<span id="totalCards">{{cards.length}}</span>
+<button [disabled]="!isMyTurn | async" (click)="pass()">Pass</button>
 <div class="container">
     <app-card *ngFor="let card of cards | async" [card]="card"></app-card>
 </div>
