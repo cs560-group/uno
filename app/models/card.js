@@ -1,10 +1,19 @@
 class Card{
-    constructor(value, suit){        
-        this.value = value
+    constructor(value, suit){
+        
+        /**
+         * Values may be numbers or actions
+         * Numbers: 0-9
+         * Actions: 'Draw 2', 'Reverse', 'Skip', 'Draw 4', 'Wild'
+         */
+        this.value = value        
+
+        /**
+         * Suits: red, green, yellow, blue, wild
+         * Treating wild as a suit makes it unnecessary to create other tests for wild
+         */
         this.suit = suit
-        this.artwork = `/assets/card/${suit}-${value}.png`,
-        this.type = "";
-        this.isWild = false;
+        this.artwork = `/assets/card/${suit}-${value}.png`
     }
 
     /**
@@ -14,9 +23,7 @@ class Card{
         return {
             value: this.value,
             suit: this.suit,
-            artwork: this.artwork,
-            type: this.type,
-            isWild: this.isWild
+            artwork: this.artwork
         }
     }
 }

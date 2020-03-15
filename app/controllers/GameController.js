@@ -21,7 +21,6 @@ gameController.handleConnection = (io, socket, name) => {
     if(queue.length >= num_players){
         const game = new Game(io)
         game.genID()
-
         while(games[game.id]){
             game.genID()
         }

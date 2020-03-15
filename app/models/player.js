@@ -6,25 +6,50 @@ class Player{
         this.name = name
         this.hand = new Collection()
         this.myTurn = false
+        this.left = null
+        this.right = null
+    }
+
+    setLeft(player){
+        this.left = player
+    }
+
+    setRight(player){
+        this.right = player
     }
 
     /**
-     * Gets private Player State and players view of other players in game
-     * @param {Boolean} all - true if hand and other player information is needed 
+     * Gets private Player State and "perspective" of other players
+     * @param {Boolean} isPrivate - true if cards in hand and other player information is needed 
+     * 
+     * Perspective here refers to information about other players visible from this player in game
+     * ie. a player's name, whether or not it's a player's turn and the number of cards in their hand
      */
-    getPublicState(){
-        return {
-            name: this.name,
-            hand: this.hand.getState(),
-            myTurn: this.myTurn
-        }
-    }
+    getState(isPrivate=false){
+        if(isPrivate){
+            let players = []
+            
+            if(player.left){
+                let player = this            
+                while(player.id != this.right.id){
+                    player = player.left
+                    players.push(player.getState())
+                }
+            }
 
-    getPrivateState() {
-        return {
-            name: this.namme,
-            hand: this.hand.getState(true),
-            myTurn: this.myTurn
+            return {
+                id: this.id,
+                name: this.name,
+                hand: this.hand.getState(isPrivate),
+                players: players,
+                myTurn: this.myTurn
+            }            
+        }else{
+            return {
+                name: this.name,
+                hand: this.hand.getState(),
+                myTurn: this.myTurn
+            }    
         }
     }
 }
