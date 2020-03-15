@@ -18,9 +18,9 @@ export class GameService {
         this.socket.on("update", (data) => {
             console.log(data);
             this._state.next(Object.assign({}, data));
-            const cardsInHand = data.private.hand.cards.map(card => new Card(card.value, card.suit, "", false));
+            const cardsInHand = data.hand.cards.map(card => new Card(card.value, card.suit, "", false));
             this._cards.next(Object.assign([], cardsInHand));
-            this._currentPlayer.next(data.currentPlayer.name);
+            this._currentPlayer.next(data.game.currentPlayer);
         });
     }
 
