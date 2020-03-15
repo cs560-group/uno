@@ -9,23 +9,18 @@ import { Router, ActivatedRoute } from '@angular/router';
   styleUrls: ['./lobby.component.css']
 })
 export class LobbyComponent implements OnInit {
-  private username: string = "";
-  private id: string = "";
+  private userId: string = "";
   private players: any = [];
-  private hasJoined: boolean = false;
 
   constructor(private socket: Socket, private router: Router, private activeRoute: ActivatedRoute) {}
 
   ngOnInit() {
-    this.socket.on("playerId", assignedId => this.id = assignedId);
-    this.socket.on("lobbyUpdate", data => {
-      this.players = data;
+    this.socket.on("lobbyUpdate", data => this.players = data);
+    this.socket.on("playerId", assignedId => this.userId = assignedId);
+    this.socket.on("start", gameId => this.router.navigate(["game", gameId]));
+    this.activeRoute.params.subscribe(params => {
+      const username = params.username;
+      this.socket.emit("newPlayer", username);
     });
-    this.socket.on("start", (gameId) => this.router.navigate(["game", gameId]));
-  }
-
-  joinLobby() {
-    this.socket.emit("newplayer", this.username);
-    this.hasJoined = true;
   }
 }

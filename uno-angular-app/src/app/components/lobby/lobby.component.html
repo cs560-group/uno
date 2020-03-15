@@ -1,13 +1,14 @@
-<form class="form">
-    <div class="form-group">
-        <label for="username">Username:</label>
-        <input name="username" type="text" [(ngModel)]="username">
-    </div>
-    <button (click)="joinLobby()" [disabled]="this.hasJoined || !this.username || this.username.length === 0">Set Display Name</button>
-</form>
-<label>Lobby Members:</label>
-<ul>
-    <li *ngFor="let player of players">{{player}}</li>
-</ul>
+<mat-card>
+    <mat-card-title>Lobby Members ({{players.length}})</mat-card-title>
+    <mat-card-content>
+        <mat-list>
+            <mat-list-item *ngFor="let player of players">
+               <span mat-line>{{player}}</span>
+               <mat-divider [inset]="true" *ngIf="!last"></mat-divider>
+            </mat-list-item>
+        </mat-list>
+    </mat-card-content>
+</mat-card>    
+
 
 <router-outlet></router-outlet>

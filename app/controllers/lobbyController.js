@@ -1,7 +1,7 @@
 const Player = require('../models/player');
 
 let queue = []
-let num_players = 2;
+let num_players = 4;
 
 const lobbyController = {};
 
@@ -31,7 +31,7 @@ lobbyController.sendLobbyUpdate = (io) => {
 }
 
 lobbyController.addSocketListeners = (socket) => {
-    socket.on('newplayer', name => lobbyController.handleConnection(lobbyController.io, socket, name, lobbyController.createAndStartGame));
+    socket.on('newPlayer', name => lobbyController.handleConnection(lobbyController.io, socket, name, lobbyController.createAndStartGame));
 }
 
 function lobbyHasEnoughForGame() {

@@ -13,6 +13,15 @@ import { GameService } from '@app/services/game.service';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { FormsModule } from '@angular/forms';
 import { GameComponent } from './components/game/game.component';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatCardModule} from '@angular/material/card';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatListModule} from '@angular/material/list';
+import { RegistrationComponent } from './components/registration/registration.component';
+
 
 const config: SocketIoConfig = { url: 'http://localhost:8080', options: {} };
 const appRoutes: Routes = [
@@ -26,13 +35,21 @@ const appRoutes: Routes = [
     HandComponent,
     CardComponent,
     LobbyComponent,
-    GameComponent
+    GameComponent,
+    RegistrationComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     RouterModule.forRoot(appRoutes),
     MatToolbarModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDividerModule,
+    MatListModule,
     NoopAnimationsModule,
     MatProgressSpinnerModule,
     FormsModule,
