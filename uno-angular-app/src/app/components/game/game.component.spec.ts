@@ -1,6 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GameComponent } from './game.component';
+import { HandComponent } from '../hand/hand.component';
+import { CardComponent } from '../card/card.component';
+import { Socket } from 'ngx-socket-io';
+
 
 describe('GameComponent', () => {
   let component: GameComponent;
@@ -8,7 +12,8 @@ describe('GameComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ GameComponent ]
+      declarations: [ GameComponent, HandComponent, CardComponent],
+      providers: [Socket]
     })
     .compileComponents();
   }));

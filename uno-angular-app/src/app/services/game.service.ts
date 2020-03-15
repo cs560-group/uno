@@ -13,6 +13,8 @@ export class GameService {
     readonly cards = this._cards.asObservable();
     private _currentPlayer = new BehaviorSubject<string>("");
     readonly currentPlayer = this._currentPlayer.asObservable();
+    private _isMyTurn = new BehaviorSubject<boolean>(false);
+    readonly isMyTurn = this._isMyTurn.asObservable();
 
     constructor(private socket: Socket) {
         this.socket.on("update", (data) => {
@@ -21,10 +23,15 @@ export class GameService {
             const cardsInHand = data.hand.cards.map(card => new Card(card.value, card.suit, "", false));
             this._cards.next(Object.assign([], cardsInHand));
             this._currentPlayer.next(data.game.currentPlayer);
+            this._isMyTurn.next(data.myTurn);
         });
     }
 
     getCardsInHand() {
         return this._cards.asObservable();
+    }
+
+    pass() {
+        this.socket.emit("pass", { gameId: this._state.getValue().game.id, playerId: this._state.getValue().id });
     }
 }

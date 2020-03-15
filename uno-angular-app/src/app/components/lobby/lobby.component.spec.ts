@@ -1,6 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LobbyComponent } from './lobby.component';
+import { FormsModule } from '@angular/forms';
+import { RouterOutlet } from '@angular/router';
+import { Socket } from 'ngx-socket-io';
 
 describe('LobbyComponent', () => {
   let component: LobbyComponent;
@@ -8,7 +11,9 @@ describe('LobbyComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LobbyComponent ]
+      declarations: [ LobbyComponent, RouterOutlet],
+      imports: [FormsModule],
+      providers: [Socket]
     })
     .compileComponents();
   }));

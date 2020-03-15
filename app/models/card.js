@@ -13,7 +13,9 @@ class Card{
          * Treating wild as a suit makes it unnecessary to create other tests for wild
          */
         this.suit = suit
-        this.artwork = `/assets/card/${suit}-${value}.png`
+        this.artwork = `/assets/card/${suit}-${value}.png`,
+        this.onPlay = "";
+        this.isWild = false;
     }
 
     /**
@@ -23,8 +25,14 @@ class Card{
         return {
             value: this.value,
             suit: this.suit,
-            artwork: this.artwork
+            artwork: this.artwork,
+            onPlay: this.onPlay,
+            isWild: this.isWild
         }
+    }
+
+    isLike(other) {
+        return this.value === other.value || this.suit === other.suit || other.isWild;
     }
 }
 

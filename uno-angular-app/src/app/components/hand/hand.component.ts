@@ -9,11 +9,16 @@ import { GameService } from '@app/services/game.service';
 })
 export class HandComponent implements OnInit {
   public cards;
+  public isMyTurn;
 
   constructor(private gameService: GameService) { }
 
   ngOnInit() {
-    this.cards = this.gameService.cards;
     this.cards = this.gameService.getCardsInHand();
+    this.isMyTurn = this.gameService.isMyTurn;
+  }
+
+  pass() {
+    this.gameService.pass();
   }
 }

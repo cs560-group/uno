@@ -29,8 +29,8 @@ class Player{
         if(isPrivate){
             let players = []
             
-            if(player.left){
-                let player = this            
+            if(this.left){
+                let player = this;     
                 while(player.id != this.right.id){
                     player = player.left
                     players.push(player.getState())

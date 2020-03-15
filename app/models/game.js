@@ -1,34 +1,27 @@
-const uuid = require('uuid/v4')
-
 const { Collection , Deck } = require('./collection')
 
 class Game{
-    constructor(io){
-
+    constructor(id, io, deck, discard){
+        this.id = id;
         this.io = io
-        this.id = 0
-
-        this.players = []
-        
-        this.turn = 0
-        this.currentPlayer = null
-
-        this.direction = 1
-        this.skip = false
-
-        this.deck = new Deck()
-        this.discard = new Collection()
-
+        this.deck = deck;
+        this.discards = discard;
+        this.players = [];
+        this.turn = 0;
+        this.currentPlayer = null;
+        this.direction = 1;
+        this.skip = false;
         this.turnDuration = 15;
         this.turnSecondsRemaining = this.turnDuration;
     }
 
-    genID(){
-        this.id = uuid()
+    addPlayer(player){
+        this.players.push(player);
+        this.createRing();
     }
 
-    addPlayer(player){
-        this.players.push(player)
+    addAllPlayers(players) {
+        players.forEach(player => this.addPlayer(player));
     }
 
     /**
@@ -36,33 +29,30 @@ class Game{
      * Broadcasts start event to players
      */
     start(){
-        this.createRing()
+        this.createRing();
+        this.currentPlayer = this.players[0];
+        this.currentPlayer.myTurn = true;
+        this.dealInitialHands();
+        this.discardTopOfDeck();
+        this.broadcast("start", this.id);
+        this.countdown();
+        this.update();
+    }
 
-        this.currentPlayer = this.players[Math.floor(Math.random() * this.players.length)]
-        this.currentPlayer.myTurn = true
-
+    dealInitialHands() {
         const cardsPerPlayer = 7;
         const totalCardsToDeal = this.players.length * cardsPerPlayer;
-        
-        let player = this.currentPlayer
-        for(let i = 0; i < totalCardsToDeal; i++){
-            this.dealCard(player)
-            player = player.left
+        for (let i = 0; i < totalCardsToDeal; i++) {
+            this.dealCurrentPlayer();
+            this.nextTurn();
         }
-
-        this.broadcast('start', this.id)
-
-        this.discardCard()
-
-        this.countdown()
-        this.update()
     }
 
     /**
      * Sets left and right of each player to create ring
      */
-    createRing(){
-        for(let i = 0; i < this.players.length; i++){
+    createRing() {
+        for(let i = 0; i < this.players.length; i++) {
             let player = this.players[i]
             let next = this.players[(i + 1) % this.players.length]
             player.setLeft(next)
@@ -74,14 +64,14 @@ class Game{
      * Counts down play timer, and broadcasts timer to all players. 
      * Automatically goes to the next turn if it reaches 0.
      */
-    countdown(){
+    countdown() {
         const oneSecond = 1000;
         setInterval(() => {
             this.io.emit('countdown', this.turnSecondsRemaining)
             if(this.turnSecondsRemaining <= 0) {
                 //Current player draws if the timer goes to 0 
-                this.dealCard(this.currentPlayer)
-                this.nextTurn()
+                this.dealCurrentPlayer();
+                this.nextTurn();
             }
             --this.turnSecondsRemaining;
         }, oneSecond);
@@ -94,10 +84,8 @@ class Game{
         this.turnSecondsRemaining = this.turnDuration;
     }
 
-    /**
-     * Changes current player based on direction and skip, resets coundown timer
-     */
-    nextTurn(){
+
+    nextTurn() {
         this.currentPlayer.myTurn = false
         if(this.direction === 1){
             if(this.skip){
@@ -119,40 +107,29 @@ class Game{
         
         this.resetCountdownTimer()
         this.update()
-    }    
-
-    /**
-     * Reads Card on top of discard and takes appropriate action if necessary
-     * *To be implemented*
-     */
-    readCard(){
-        let card = this.discard.getTopCard()
-        //Define behaviours
     }
 
     /**
-     * Determines if a card is a legal play, given the current gamestate
-     * *To be implemented*
-     * @param {Card} card 
+     * @returns A copy of the dealt card
      */
-    isValid(card){
-        let top = this.discard.getTopCard()
-        return card.value === top.value || card.suit === top.suit || card.suit === 'wild'
+    dealCurrentPlayer() {
+        return this.deal(this.getCurrentPlayer());
     }
 
     /**
      * Sends top card of deck to player's hand
      * @param {Player} player 
+     * @returns A copy of the dealt card
      */
-    dealCard(player){
-        this.deck.sendCard(0, player.hand)
+    deal(player){
+        return this.deck.sendTop(player.hand, false);
     }
 
     /**
      * Sends top card of deck to top of discard pile
      */
-    discardCard(){
-        this.deck.sendCard(0, this.discard, true)
+    discardTopOfDeck(){
+        this.deck.sendTop(this.discards, true)
     }
 
     /**
@@ -170,12 +147,16 @@ class Game{
         return {
             id: this.id,
             discard: { 
-                cards: this.discard.getState(true),
-                top: this.discard.getTopCard()
+                cards: this.discards.getState(true),
+                top: this.discards.peekTop()
             },
             deck: this.deck.getState(),
             currentPlayer: this.currentPlayer.name
         }
+    }
+
+    getCurrentPlayer() {
+        return this.currentPlayer;
     }
 
     /**
@@ -183,14 +164,11 @@ class Game{
      */
     update(){
         let game = this.getState()
-
-        for(player of this.players){
+        this.players.forEach(player => {
             let data = player.getState(true)
             data.game = game
-
             this.emitTo(player, 'update', data)
-            console.log(data)
-        }
+        });
     }
 
     /**
@@ -210,6 +188,18 @@ class Game{
      */
     emitTo(player, event, data) {
         this.io.to(player.id).emit(event, data);
+    }
+
+    passCurrentTurn() {
+        const dealtCard = this.dealCurrentPlayer();
+        if (!this.isPlayable(dealtCard))
+            this.nextTurn();
+        this.update();
+    }
+
+    isPlayable(card) {
+        const lastPlayedCard = this.discards.peekTop();
+        return lastPlayedCard === undefined || card.isLike(lastPlayedCard);
     }
 }
 
