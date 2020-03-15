@@ -13,6 +13,7 @@ class Game{
         this.skip = false;
         this.turnDuration = 15;
         this.turnSecondsRemaining = this.turnDuration;
+        this.currentPlayerHasPassed = false;
     }
 
     addPlayer(player){
@@ -43,7 +44,6 @@ class Game{
         const cardsPerPlayer = 7;
         const totalCardsToDeal = this.players.length * cardsPerPlayer;
         for (let i = 0; i < totalCardsToDeal; i++) {
-            this.dealCurrentPlayer();
             this.nextTurn();
         }
     }
@@ -69,7 +69,7 @@ class Game{
         setInterval(() => {
             this.io.emit('countdown', this.turnSecondsRemaining)
             if(this.turnSecondsRemaining <= 0) {
-                //Current player draws if the timer goes to 0 
+                //Current player draws if the timer goes to 0
                 this.dealCurrentPlayer();
                 this.nextTurn();
             }
@@ -86,6 +86,7 @@ class Game{
 
 
     nextTurn() {
+        this.currentPlayerHasPassed = false;
         this.currentPlayer.myTurn = false
         if(this.direction === 1){
             if(this.skip){
@@ -106,6 +107,7 @@ class Game{
         this.turn++
         
         this.resetCountdownTimer()
+        this.dealCurrentPlayer()
         this.update()
     }
 
@@ -190,11 +192,19 @@ class Game{
         this.io.to(player.id).emit(event, data);
     }
 
+    /**
+     * @returns True if the player has passed, otherwise false if the current player has already passed on their turn.
+     */
     passCurrentTurn() {
+        if (this.currentPlayerHasPassed) {
+            return false;
+        }
+        this.currentPlayerHasPassed = true;
         const dealtCard = this.dealCurrentPlayer();
         if (!this.isPlayable(dealtCard))
             this.nextTurn();
         this.update();
+        return true;
     }
 
     isPlayable(card) {
