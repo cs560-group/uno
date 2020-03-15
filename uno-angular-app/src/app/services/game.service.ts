@@ -20,10 +20,10 @@ export class GameService {
         this.socket.on("update", (data) => {
             console.log(data);
             this._state.next(Object.assign({}, data));
-            const cardsInHand = data.private.hand.cards.map(card => new Card(card.value, card.suit, "", false));
+            const cardsInHand = data.hand.cards.map(card => new Card(card.value, card.suit, "", false));
             this._cards.next(Object.assign([], cardsInHand));
-            this._currentPlayer.next(data.currentPlayer.name);
-            this._isMyTurn.next(data.private.myTurn);
+            this._currentPlayer.next(data.game.currentPlayer);
+            this._isMyTurn.next(data.myTurn);
         });
     }
 
@@ -32,6 +32,6 @@ export class GameService {
     }
 
     pass() {
-        this.socket.emit("pass", { gameId: this._state.getValue().id, playerId: this._state.getValue().private.id });
+        this.socket.emit("pass", { gameId: this._state.getValue().game.id, playerId: this._state.getValue().id });
     }
 }

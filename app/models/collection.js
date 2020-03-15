@@ -30,7 +30,11 @@ class Collection{
      * @param {Number} index : index of card to be removed
      */
     removeCard(index){
-        return this.cards.splice(index, 1)[0];
+        if(index < this.cards.length && index >= 0){
+            return this.cards.splice(index, 1)[0];
+        }else{
+            return false
+        }      
     }
 
     /**
@@ -41,16 +45,24 @@ class Collection{
      * @returns {Card} : A copy of the card sent.
     */
     sendCard(index, collection, toTop=false){
-        const cardToSend = this.removeCard(index)
-        collection.addCard(cardToSend, toTop)   
-        return Object.assign(new Card(0, ""), cardToSend);   
+        const card = this.removeCard(index)
+        if(card){
+            collection.addCard(card, toTop);
+            return Object.assign(new Card(), card);   
+        }else{
+            return false
+        }        
     }
 
     /**
      * Returns top card of collection
      */
     getTopCard(){
-        return this.cards[0];
+        if(this.count() > 0){
+            return this.cards[0]
+        }else{
+            return false
+        }        
     }
 
     /**
@@ -59,13 +71,14 @@ class Collection{
      */
     getState(all=false){
         if(all){
+            let cards = this.cards.map(card => {return card.getState()})
             return{
-                cards: this.cards,
-                count: this.count
+                cards: cards,
+                count: this.count()
             }
         }else{
             return{
-                count: this.count
+                count: this.count()
             }
         }
     }

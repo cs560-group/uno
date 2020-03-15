@@ -9,10 +9,21 @@ describe("The game", () => {
         let player;
 
         beforeEach(() => {
-            game = new Game(null, new Deck([]), new Deck([]));
+            const ioSpy = { 
+                socketSpy: {
+                    emit: function (event, data) { this.emitCalled = true; },
+                    emitCalled: false
+                },
+                to: function (playerId) { 
+                    this.toCalled = true; 
+                    return this.socketSpy;
+                }, 
+                toCalled: false ,
+            };
+            game = new Game(1, ioSpy, new Deck([]), new Deck([]));
             player = new Player(1, "player1");
             game.addPlayer(player);
-            game.currentIndex = 0;
+            game.currentPlayer = player;
         });
 
         it("should deal a card to the player", () => {
