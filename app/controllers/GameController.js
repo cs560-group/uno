@@ -1,6 +1,7 @@
 const { v4: uuidv4 } = require("uuid");
 const { Deck } = require("../models/collection");
 const Game = require("../models/game");
+const Card = require("../models/card");
 
 const games = {};
 const gameController = {};
@@ -21,8 +22,21 @@ gameController.pass = (info) => {
         game.passCurrentTurn();
 }
 
+gameController.playCard = (data) => {
+    const game = games[data.gameId];
+    if (game && game.getCurrentPlayer().id === data.playerId && data.card) {
+        const card = new Card(data.card.value, data.card.suit);
+        card.type = data.card.type;
+        card.isWild = data.card.isWild;
+        if(game.play(card)) {
+            game.nextTurn();
+        }
+    }
+}
+
 gameController.addSocketListeners = (socket) => {
     socket.on("pass", gameController.pass);
+    socket.on("playCard", gameController.playCard);
 }
 
 function generateGameId() {

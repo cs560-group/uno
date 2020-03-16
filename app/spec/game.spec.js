@@ -1,6 +1,6 @@
 const Game = require("../models/game");
 const Player = require("../models/player");
-const { Deck } = require("../models/collection");
+const { Collection, Deck } = require("../models/collection");
 const Card = require("../models/card");
 const IoSpy = require("./helpers/ioSpy");
 const SocketSpy = require("./helpers/socketSpy");
@@ -20,16 +20,6 @@ describe("The game", () => {
             nextPlayer = new Player(2, "player2");
             game.addPlayer(nextPlayer);
             game.createRing();
-        })
-        it("should draw a card for them", () => {
-            const cardToDraw = new Card(1, "blue");
-            game.deck = new Deck([cardToDraw]);
-
-            game.nextTurn();
-
-            expect(nextPlayer.hand.count()).toEqual(1);
-            expect(nextPlayer.hand.getTopCard()).toEqual(cardToDraw);
-            expect(game.deck.count()).toEqual(0);
         });
 
         it("should update the player's state", () => {
@@ -83,8 +73,41 @@ describe("The game", () => {
 
             describe("and the player passes again", () => {
                 it("should do nothing", () => {
+                    game.currentPlayerHasPassed = true;
                     expect(game.passCurrentTurn()).toEqual(false);
                 });
+            });
+        });
+    });
+
+    describe("when the current player plays a card", () => {
+        describe("and the card is playable", () => {
+            it("should move the card from the player's hand to the discard pile", () => {
+                const game = new Game(1, new IoSpy(new SocketSpy()), new Deck([]), new Deck([new Card(1, "red")]));
+                const card = new Card(1, "red");
+                const player = new Player(1, "player1");
+                player.hand = new Collection([card]);
+                game.currentPlayer = player;
+
+                game.play(card);
+
+                expect(player.hand.count()).toEqual(0);
+                expect(game.discards.count()).toEqual(2);
+                expect(game.discards.getTopCard()).toEqual(card);
+            });
+        });
+
+        describe("and the card is not playable", () => {
+            it("should return false", () => {
+                const game = new Game(1, new IoSpy(new SocketSpy()), new Deck([]), new Deck([new Card(2, "blue")]));
+                const card = new Card(1, "red");
+                const player = new Player(1, "player1");
+                player.hand = new Collection([card]);
+                game.currentPlayer = player;
+
+                const cardWasPlayed = game.play(card);
+
+                expect(cardWasPlayed).toEqual(false);
             });
         });
     });

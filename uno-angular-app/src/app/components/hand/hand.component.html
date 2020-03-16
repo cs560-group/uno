@@ -4,6 +4,6 @@
         <button mat-raised-button [disabled]="!isMyTurn || hasPassed" (click)="pass()">Pass</button>
     </mat-card-header>
     <mat-card-content class="container">
-        <app-card *ngFor="let card of cards" [card]="card"></app-card>
+        <app-card *ngFor="let card of cards" [card]="card" (click)="play(card)"></app-card>
     </mat-card-content>
 </mat-card>
