@@ -1,5 +1,9 @@
-Total Cards:<span id="totalCards">{{cards.length}}</span>
-<button [disabled]="!isMyTurn | async" (click)="pass()">Pass</button>
-<div class="container">
-    <app-card *ngFor="let card of cards | async" [card]="card"></app-card>
-</div>
+<mat-card>
+    <mat-card-title>My Hand ({{cards.length}})</mat-card-title>
+    <mat-card-header>
+        <button mat-raised-button [disabled]="!isMyTurn || hasPassed" (click)="pass()">Pass</button>
+    </mat-card-header>
+    <mat-card-content class="container">
+        <app-card *ngFor="let card of cards" [card]="card"></app-card>
+    </mat-card-content>
+</mat-card>
