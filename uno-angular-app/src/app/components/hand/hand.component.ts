@@ -8,7 +8,7 @@ import { GameService } from '@app/services/game.service';
   styleUrls: ['./hand.component.css']
 })
 export class HandComponent implements OnInit {
-  cards;
+  cards = [];
   count: number = 0;
   isMyTurn: boolean = false;
   private hasPassed: boolean = false;
@@ -17,7 +17,7 @@ export class HandComponent implements OnInit {
   constructor(private gameService: GameService) { }
 
   ngOnInit() {
-    this.gameService.cards.subscribe(updatedCards =>  this.cards = updatedCards);
+    this.gameService.cards.subscribe(updatedCards => this.cards = updatedCards);
     this.gameService.isMyTurn.subscribe(isTurn => {
       this.isMyTurn = isTurn
       this.hasPassed = false;
@@ -28,4 +28,8 @@ export class HandComponent implements OnInit {
     this.hasPassed = true;
     this.gameService.pass();
   } 
+
+  play(card) {
+    this.gameService.playCard(card);
+  }
 }

@@ -22,4 +22,20 @@ describe("The collection", () => {
             expect(card).not.toEqual(cardSent);
         });
     });
+
+    describe("when finding the index of a card in the collection", () => {
+        it("should return the index of the card", () => {
+            const card = new Card(1, "blue");
+            const collection = new Collection([new Card(2, "red"), card]);
+            expect(collection.indexOf(card)).toEqual(1);
+        });
+    });
+
+    describe("when finding the index of a card not in the collection", () => {
+        it("should return -1", () => {
+            const card = new Card(1, "blue");
+            const collection = new Collection([new Card(2, "red"), new Card(2, "green")]);
+            expect(collection.indexOf(card)).toEqual(-1);
+        })
+    })
 });

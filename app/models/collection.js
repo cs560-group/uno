@@ -54,6 +54,10 @@ class Collection{
         }        
     }
 
+    indexOf(card) {
+        return this.cards.findIndex(c => card.equals(c));
+    }
+
     /**
      * Returns top card of collection
      */
@@ -96,7 +100,7 @@ class Deck extends Collection{
      */
     initDeck(){
         this.cards = []
-        const suits = ["red", "green", "yellow", "blue"]
+        const suits = ["red", "green", "yellow", "lightblue"]
         for(let suit of suits){
             /**
              * Initializes number cards for each suit
@@ -106,9 +110,8 @@ class Deck extends Collection{
             this.addCard(new Card(0, suit))
 
             for(let i = 1; i < 10; i++){
-                for(let j = 0; j < 2; j++){
-                    this.addCard(new Card(i, suit))
-                }
+                this.addCard(new Card(i, suit));
+                this.addCard(new Card(i, suit));
             }
 
             /**

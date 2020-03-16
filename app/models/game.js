@@ -44,6 +44,7 @@ class Game{
         const cardsPerPlayer = 7;
         const totalCardsToDeal = this.players.length * cardsPerPlayer;
         for (let i = 0; i < totalCardsToDeal; i++) {
+            this.dealCurrentPlayer();
             this.nextTurn();
         }
     }
@@ -106,9 +107,8 @@ class Game{
         this.currentPlayer.myTurn = true
         this.turn++
         
-        this.resetCountdownTimer()
-        this.dealCurrentPlayer()
-        this.update()
+        this.resetCountdownTimer();
+        this.update();
     }
 
     /**
@@ -210,6 +210,19 @@ class Game{
     isPlayable(card) {
         const lastPlayedCard = this.discards.peekTop();
         return lastPlayedCard === undefined || card.isLike(lastPlayedCard);
+    }
+
+    play(card) {
+        const isPlayable = this.isPlayable(card);
+        if (isPlayable) {
+            const player = this.getCurrentPlayer();
+            const index = player.hand.indexOf(card);
+            if (index != -1) {
+                player.hand.sendCard(index, this.discards, true);
+                return true;
+            }
+        }
+        return false;
     }
 }
 

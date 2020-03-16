@@ -34,4 +34,18 @@ describe("The card", () => {
             expect(card.isLike(other)).toBeFalsy();
         })
     })
+
+    describe("given another card with the same values", () => {
+        it("it is equal to it", () => {
+            const other = new Card(1, "blue");
+            expect(card.equals(other)).toEqual(true);
+        });
+    });
+
+    describe("given another card wihout the same values", () => {
+        it("it is not equal to it", () => {
+            const other = new Card(1, "red");
+            expect(card.equals(other)).toEqual(false);
+        });
+    });
 });

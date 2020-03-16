@@ -14,7 +14,7 @@ class Card{
          */
         this.suit = suit
         this.artwork = `/assets/card/${suit}-${value}.png`,
-        this.onPlay = "";
+        this.type = "";
         this.isWild = false;
     }
 
@@ -26,13 +26,21 @@ class Card{
             value: this.value,
             suit: this.suit,
             artwork: this.artwork,
-            onPlay: this.onPlay,
+            onPlay: this.type,
             isWild: this.isWild
         }
     }
 
     isLike(other) {
         return this.value === other.value || this.suit === other.suit || other.isWild;
+    }
+
+    equals(other) {
+        return this.value === other.value &&
+            this.suit === other.suit &&
+            this.artwork === other.artwork &&
+            this.type === other.type &&
+            this.isWild === other.isWild;
     }
 }
 
