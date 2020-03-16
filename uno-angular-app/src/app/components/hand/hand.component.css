@@ -1,17 +1,18 @@
+mat-card {
+    border: solid black 2px;
+}
+
+mat-card-header {
+    margin-bottom: 10px;
+}
+
 .container {
     display: flex;
     flex-direction: row;
     justify-content: center;
     flex-wrap: wrap;
-    text-align: center;
-    border: solid 2px black;
+    overflow-y: scroll;
     border-radius: 10px;
     min-height: 180px;
     max-height: 180px;
-    overflow-y: scroll;
-}
-
-.container div {
-    width: 100%;
-    margin: 0 auto;
 }

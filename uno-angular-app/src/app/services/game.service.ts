@@ -15,6 +15,8 @@ export class GameService {
     readonly currentPlayer = this._currentPlayer.asObservable();
     private _isMyTurn = new BehaviorSubject<boolean>(false);
     readonly isMyTurn = this._isMyTurn.asObservable();
+    private _discard = new BehaviorSubject<Card>(null);
+    readonly discard = this._discard.asObservable();
 
     constructor(private socket: Socket) {
         this.socket.on("update", (data) => {
@@ -24,6 +26,7 @@ export class GameService {
             this._cards.next(Object.assign([], cardsInHand));
             this._currentPlayer.next(data.game.currentPlayer);
             this._isMyTurn.next(data.myTurn);
+            this._discard.next(data.game.discard.top);
         });
     }
 

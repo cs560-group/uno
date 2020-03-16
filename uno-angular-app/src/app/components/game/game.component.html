@@ -1,5 +1,14 @@
-<div class="container">
-    Current Player: {{currentPlayer}}
-</div>
+<mat-card class="card">
+    <mat-card-title>Current Player: {{currentPlayer}}</mat-card-title>
+</mat-card>
 
-<app-hand></app-hand>
+
+<div class="hand-discard-container">
+    <mat-card class="discard-container">
+        <mat-card-title>Discard Pile</mat-card-title>
+        <mat-card-content>
+            <app-card [card]="discard"></app-card>
+        </mat-card-content>
+    </mat-card>
+    <app-hand></app-hand>
+</div>
