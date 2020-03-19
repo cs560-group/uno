@@ -24,11 +24,15 @@ gameController.pass = (info) => {
 
 gameController.playCard = (data) => {
     const game = games[data.gameId];
-    if (game && game.getCurrentPlayer().id === data.playerId && data.card) {
-        const card = new Card(data.card.value, data.card.suit);
-        card.type = data.card.type;
-        card.isWild = data.card.isWild;
-        if(game.play(card)) {
+    const card = new Card(data.card.value, data.card.suit);
+    card.type = data.card.type;
+    card.isWild = data.card.isWild;
+    if (game && game.getCurrentPlayer().id === data.playerId && data.card && game.play(card)) {
+        if(game.currentPlayerHasWon()) {
+            game.finish();
+            removeGame(game);
+        }
+        else {
             game.nextTurn();
         }
     }
@@ -41,6 +45,10 @@ gameController.addSocketListeners = (socket) => {
 
 function generateGameId() {
     return uuidv4();
+}
+
+function removeGame(game) {
+    delete games[game.id];
 }
 
 module.exports = gameController;
