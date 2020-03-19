@@ -21,6 +21,8 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatListModule} from '@angular/material/list';
 import { RegistrationComponent } from './components/registration/registration.component';
+import {MatTableModule} from '@angular/material/table';
+import { LobbyTableComponent } from './components/lobby-table/lobby-table.component';
 
 
 const config: SocketIoConfig = { url: 'http://localhost:8080', options: {} };
@@ -36,7 +38,8 @@ const appRoutes: Routes = [
     CardComponent,
     LobbyComponent,
     GameComponent,
-    RegistrationComponent
+    RegistrationComponent,
+    LobbyTableComponent
   ],
   imports: [
     BrowserModule,
@@ -50,6 +53,7 @@ const appRoutes: Routes = [
     MatIconModule,
     MatDividerModule,
     MatListModule,
+    MatTableModule,
     NoopAnimationsModule,
     MatProgressSpinnerModule,
     FormsModule,

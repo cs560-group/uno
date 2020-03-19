@@ -1,7 +1,7 @@
 import { Socket } from 'ngx-socket-io';
 import { Injectable } from '@angular/core';
 import { Card } from '@app/models/card';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
     providedIn: "root"
