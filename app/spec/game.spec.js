@@ -110,5 +110,38 @@ describe("The game", () => {
                 expect(cardWasPlayed).toEqual(false);
             });
         });
+
+        describe("and the card is the last card in the player's hand", () => {
+            it("then the player wins and the game is done", () => {
+                const game = new Game(1, new IoSpy(new SocketSpy()), new Deck([]), new Deck([new Card(2, "red")]));
+                const card = new Card(1, "red");
+                const player = new Player(1, "player1");
+                player.hand = new Collection([card]);
+                game.addPlayer(player);
+                game.currentPlayer = player;
+
+                game.play(card);
+
+                expect(game.currentPlayerHasWon()).toBeTruthy();
+            });
+        })
     });
+
+    describe("when the game is finished", () => {
+        it("sets the game as done and notifies all players", () => {
+            const socketSpy = new SocketSpy();
+            const game = new Game(1, new IoSpy(socketSpy), new Deck([]), new Deck([new Card(2, "blue")]));
+            const card = new Card(1, "red");
+            const player = new Player(1, "player1");
+            player.hand = new Collection([]);
+            game.addPlayer(player);
+            game.currentPlayer = player;
+
+            game.finish();
+            expect(game.done).toBeTruthy();
+            const lastBroadcast = socketSpy.lastInvocation();
+            expect(lastBroadcast.event).toEqual("gameOver")
+            expect(lastBroadcast.data).toEqual({ winner: player.name });
+        })
+    })
 });

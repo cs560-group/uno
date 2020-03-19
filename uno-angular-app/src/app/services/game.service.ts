@@ -17,6 +17,10 @@ export class GameService {
     readonly isMyTurn = this._isMyTurn.asObservable();
     private _discard = new BehaviorSubject<Card>(null);
     readonly discard = this._discard.asObservable();
+    private _gameIsOver = new BehaviorSubject<boolean>(false);
+    readonly gameIsOver = this._gameIsOver.asObservable();
+    private _winner = new BehaviorSubject<string>("");
+    readonly winner = this._winner.asObservable();
 
     constructor(private socket: Socket) {
         this.socket.on("update", (data) => {
@@ -28,6 +32,15 @@ export class GameService {
             this._isMyTurn.next(data.myTurn);
             this._discard.next(data.game.discard.top);
         });
+
+        this.socket.on("gameOver", (data) => {
+            this._winner.next(data.winner);
+            this._gameIsOver.next(true);
+        })
+    }
+
+    leaveGame() {
+        this._gameIsOver.next(false);
     }
 
     getCardsInHand() {
