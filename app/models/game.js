@@ -14,6 +14,7 @@ class Game{
         this.turnDuration = 15;
         this.turnSecondsRemaining = this.turnDuration;
         this.currentPlayerHasPassed = false;
+        this.done = false;
     }
 
     addPlayer(player){
@@ -223,6 +224,16 @@ class Game{
             }
         }
         return false;
+    }
+
+    currentPlayerHasWon() {
+        return this.getCurrentPlayer().hand.count() === 0;
+    }
+
+    finish() {
+        this.done = true;
+        this.update();
+        this.broadcast("gameOver", { winner: this.getCurrentPlayer().name });
     }
 }
 
