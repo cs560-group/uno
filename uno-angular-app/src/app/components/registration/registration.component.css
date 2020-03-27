@@ -1,4 +1,5 @@
 mat-card {
+    display: inline-block;
     min-width: auto;
     width: 350px;
     margin: 10px auto;
