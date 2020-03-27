@@ -6,10 +6,6 @@ mat-card {
     border-radius: 10px;
 }
 
-.mat-card-title {
-    text-align: center;
-}
-
 button {
     margin-left: 10px;
 }

@@ -23,6 +23,7 @@ import {MatListModule} from '@angular/material/list';
 import { RegistrationComponent } from './components/registration/registration.component';
 import {MatTableModule} from '@angular/material/table';
 import { LobbyTableComponent } from './components/lobby-table/lobby-table.component';
+import { LobbyViewComponent } from './components/lobby-view/lobby-view.component';
 
 
 const config: SocketIoConfig = { url: 'http://localhost:8080', options: {} };
@@ -39,7 +40,8 @@ const appRoutes: Routes = [
     LobbyComponent,
     GameComponent,
     RegistrationComponent,
-    LobbyTableComponent
+    LobbyTableComponent,
+    LobbyViewComponent
   ],
   imports: [
     BrowserModule,

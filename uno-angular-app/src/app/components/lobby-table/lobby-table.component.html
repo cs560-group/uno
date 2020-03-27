@@ -1,21 +1,22 @@
 <div class="col-lg-8 col-lg-offset-2">
     <table mat-table [dataSource]="lobbies" class="mat-elevation-z8">
-        <!-- Position Column -->
         <ng-container matColumnDef="id">
           <th mat-header-cell *matHeaderCellDef> ID </th>
           <td mat-cell *matCellDef="let lobby"> {{lobby.id}} </td>
         </ng-container>
-      
-        <!-- Name Column -->
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef> Name </th>
           <td mat-cell *matCellDef="let lobby"> {{lobby.name}} </td>
         </ng-container>
-      
-        <!-- Weight Column -->
         <ng-container matColumnDef="members">
           <th mat-header-cell *matHeaderCellDef> Members </th>
           <td mat-cell *matCellDef="let lobby"> {{lobby.members.length}} </td>
+        </ng-container>
+        <ng-container matColumnDef="join">
+          <th mat-header-cell *matHeaderCellDef> Join </th>
+          <td mat-cell *matCellDef="let lobby">
+            <button class="btn-primary" (click)="joinLobby(lobby)">Join</button>
+          </td>
         </ng-container>
       
         <tr mat-header-row *matHeaderRowDef="columns; sticky: true"></tr>

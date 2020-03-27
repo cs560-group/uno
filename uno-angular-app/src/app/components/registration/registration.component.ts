@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { UserService } from '@app/services/userService';
 
 @Component({
   selector: 'app-registration',
@@ -9,11 +9,11 @@ import { Router } from '@angular/router';
 export class RegistrationComponent implements OnInit {
   private username: string = "";
 
-  constructor(private router: Router) {}
+  constructor(private userService: UserService) {}
 
   ngOnInit() {}
-
-  joinLobby(): void {
-    this.router.navigate(["lobby", this.username]);
+  
+  setDisplayName() {
+    this.userService.setDisplayName(this.username);
   }
 }
