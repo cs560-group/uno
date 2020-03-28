@@ -5,6 +5,8 @@
     flex-direction: column;
     border: solid black 2px;
     width: 500px;
+    height: 150px;
+    margin: 10px;
 }
 
 .message-container {

@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import Message from '@app/models/message';
+import { Socket } from 'ngx-socket-io';
+import UserService from '@app/services/user.service';
+import { GameService } from '@app/services/game.service';
 
 @Component({
   selector: 'app-chat',
@@ -7,23 +10,29 @@ import Message from '@app/models/message';
   styleUrls: ['./chat.component.css']
 })
 export class ChatComponent implements OnInit {
-  messages: Message[];
+  messages: Message[] = new Array<Message>();
   message: string;
+  private currentGameId: string = "";
 
-  constructor() { }
+  constructor(private socket: Socket, private userService: UserService, private gameService: GameService) { }
 
   ngOnInit() {
-    this.messages = [
-      new Message("Levi", "Hi!", new Date().toLocaleTimeString()),
-      new Message("Bob", "Hi Levi!", new Date().toLocaleTimeString()),
-      new Message("Levi", "How are you?", new Date().toLocaleTimeString()),
-      new Message("Bob", "Doing Well! You?", new Date().toLocaleTimeString()),
-      new Message("Levi", "I'm great!", new Date().toLocaleTimeString()),
-    ];
+    this.socket.on("message", message => {
+      const sentAt = new Date(message.sent).toLocaleTimeString();
+      const newMessage = new Message(message.sender, message.content, sentAt);
+      this.messages.push(newMessage);
+    });
+    this.gameService.gameId.subscribe(id => this.currentGameId = id);
   }
 
   sendMessage(): void {
-    this.messages.push(new Message("Levi", this.message, new Date().toLocaleTimeString()));
+    if (this.message.trim().length > 0) {
+      this.socket.emit("message", 
+      { 
+        gameId: this.currentGameId, 
+        message: new Message(this.userService.username, this.message, new Date().toUTCString())
+      });
+    };
     this.message = "";
   }
 

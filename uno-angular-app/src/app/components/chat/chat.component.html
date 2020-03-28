@@ -1,7 +1,7 @@
 <mat-card class="chat-container" resize="both">
     <div class="message-container" #scrollMe [scrollTop]="scrollMe.scrollHeight">
         <div *ngFor="let message of messages">
-            {{message.sender}} @ {{message.sent}}:{{message.content}}
+            {{message.sender}} @ {{message.sent}}: {{message.content}}
         </div>
     </div>
     <form class="controls-container">
