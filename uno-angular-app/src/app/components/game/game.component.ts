@@ -3,6 +3,7 @@ import { Socket } from 'ngx-socket-io';
 import { GameService } from '@app/services/game.service';
 import { Card } from '@app/models/card';
 import { Router } from '@angular/router';
+import UserService from '@app/services/user.service';
 
 @Component({
   selector: 'app-game',
@@ -15,7 +16,7 @@ export class GameComponent implements OnInit {
   private gameIsOver: boolean = false;
   private winner: string = "";
 
-  constructor(private gameService: GameService, private router: Router) { }
+  constructor(private gameService: GameService, private userService: UserService, private router: Router) { }
 
   ngOnInit() {
     this.gameService.currentPlayer.subscribe(player => this.currentPlayer = player);
@@ -27,7 +28,6 @@ export class GameComponent implements OnInit {
       if (this.gameIsOver) {
         this.router.navigate(["/"]);
         alert(`The winner is ${this.winner}`);
-        this.gameService.leaveGame();
       }
     });
     this.gameService.winner.subscribe(winner => this.winner = winner);

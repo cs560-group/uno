@@ -21,11 +21,14 @@ export class GameService {
     readonly gameIsOver = this._gameIsOver.asObservable();
     private _winner = new BehaviorSubject<string>("");
     readonly winner = this._winner.asObservable();
+    private _gameId = new BehaviorSubject<string>("");
+    readonly gameId = this._gameId.asObservable();
 
     constructor(private socket: Socket) {
         this.socket.on("update", (data) => {
             console.log(data);
             this._state.next(Object.assign({}, data));
+            this._gameId.next(data.game.id);
             const cardsInHand = data.hand.cards.map(card => new Card(card.value, card.suit, "", false));
             this._cards.next(Object.assign([], cardsInHand));
             this._currentPlayer.next(data.game.currentPlayer);
@@ -36,11 +39,8 @@ export class GameService {
         this.socket.on("gameOver", (data) => {
             this._winner.next(data.winner);
             this._gameIsOver.next(true);
+            this._gameId.next("");
         })
-    }
-
-    leaveGame() {
-        this._gameIsOver.next(false);
     }
 
     getCardsInHand() {

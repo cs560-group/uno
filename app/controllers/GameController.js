@@ -38,9 +38,18 @@ gameController.playCard = (data) => {
     }
 }
 
+gameController.broadcastMessage = (data) => {
+    const game = games[data.gameId];
+    const message = data.message;
+    if (game && message) {
+        game.broadcast("message", message);
+    }
+}
+
 gameController.addSocketListeners = (socket) => {
     socket.on("pass", gameController.pass);
     socket.on("playCard", gameController.playCard);
+    socket.on("message", gameController.broadcastMessage);
 }
 
 function generateGameId() {
