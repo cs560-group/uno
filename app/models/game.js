@@ -220,10 +220,29 @@ class Game{
             const index = player.hand.indexOf(card);
             if (index != -1) {
                 player.hand.sendCard(index, this.discards, true);
+                this.readCard(card)
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * Reads card and changes game state based on it's value, if necessary
+     * @param {Card} card 
+     */
+    readCard(card){
+        if(typeof(card.value) === "string"){
+            if(card.value === "Skip"){
+                //to be implemented
+            }else if(card.value === "Reverse"){
+                //to be implemented
+            }else if(card.value === "+2"){
+                //to be implemented
+            }else if(card.value === "+4"){
+                //to be implemented
+            }
+        }
     }
 
     currentPlayerHasWon() {
