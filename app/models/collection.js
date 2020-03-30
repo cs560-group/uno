@@ -134,6 +134,18 @@ class Deck extends Collection{
              * 2 each
              * *To be added*
              */
+
+            for(let i = 0; i < 2; i++){
+                this.addCard(new Card("Skip", suit));
+            }
+
+            for(let i = 0; i < 2; i++){
+                this.addCard(new Card("+2", suit));
+            }
+
+            for(let i = 0; i < 2; i++){
+                this.addCard(new Card("Reverse", suit));
+            }
         }
 
         /**
@@ -141,6 +153,11 @@ class Deck extends Collection{
          * 4 each
          * *To be added*
          */
+
+        for(let i = 0; i < 4; i++){
+            this.addCard(new Card("Wild", null, true))
+            this.addCard(new Card("+4", null, true))
+        }
 
         this.shuffle()
     }

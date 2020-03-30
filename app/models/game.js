@@ -196,6 +196,7 @@ class Game{
      * @param {Card} card 
      */
     isPlayable(card) {
+<<<<<<< HEAD
         return this.discards.getTopCard() === undefined || card.isLike(this.discards.getTopCard());
     }
 
@@ -210,13 +211,49 @@ class Game{
         if(card && this.isPlayable(card)) {
             this.currentPlayer.hand.sendCard(card_index, this.discards, true);
             return true;
+=======
+        const lastPlayedCard = this.discards.peekTop();
+        return lastPlayedCard === undefined || card.isLike(lastPlayedCard);
+    }
+
+    play(card) {
+        const isPlayable = this.isPlayable(card);
+        if (isPlayable) {
+            const player = this.getCurrentPlayer();
+            const index = player.hand.indexOf(card);
+            if (index != -1) {
+                player.hand.sendCard(index, this.discards, true);
+                this.readCard(card)
+                return true;
+            }
+>>>>>>> action-card-init
         }
         return false;
     }
 
     /**
+<<<<<<< HEAD
      * Checks if current player has won the game
      */
+=======
+     * Reads card and changes game state based on it's value, if necessary
+     * @param {Card} card 
+     */
+    readCard(card){
+        if(typeof(card.value) === "string"){
+            if(card.value === "Skip"){
+                //to be implemented
+            }else if(card.value === "Reverse"){
+                //to be implemented
+            }else if(card.value === "+2"){
+                //to be implemented
+            }else if(card.value === "+4"){
+                //to be implemented
+            }
+        }
+    }
+
+>>>>>>> action-card-init
     currentPlayerHasWon() {
         return this.getCurrentPlayer().hand.count() === 0;
     }
