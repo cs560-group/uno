@@ -1,21 +1,34 @@
 class Card{
-    constructor(value, suit){
+    constructor(value, suit, isWild=false){
         
         /**
          * Values may be numbers or actions
          * Numbers: 0-9
-         * Actions: 'Draw 2', 'Reverse', 'Skip', 'Draw 4', 'Wild'
+         * Actions: 'Draw 2', 'Reverse', 'Skip', 'Draw 4'
          */
         this.value = value        
 
         /**
-         * Suits: red, green, yellow, blue, wild
-         * Treating wild as a suit makes it unnecessary to create other tests for wild
+         * Suits: red, green, yellow, blue
          */
         this.suit = suit
         this.artwork = `/assets/card/${suit}-${value}.png`,
         this.type = "";
-        this.isWild = false;
+        this.isWild = isWild;
+    }
+
+    /**
+     * Changes the suit of a card if it is Wild.
+     * @param {String} suit 
+     */
+    changeSuit(suit){
+        let suits = ["red","green", "yellow", "blue"]
+        if(this.isWild && suits.includes(suit)){
+            this.suit = suit
+            this.isWild = false
+            return true
+        }        
+        return false
     }
 
     /**
