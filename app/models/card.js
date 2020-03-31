@@ -44,8 +44,13 @@ class Card{
         }
     }
 
+    /**
+     * Checks if this card is like another card
+     * i.e. Values are the same, Suit are the same, or either card is a wild card
+     * @param {Card} other 
+     */
     isLike(other) {
-        return this.value === other.value || this.suit === other.suit || other.isWild;
+        return this.value === other.value || this.suit === other.suit || other.isWild || this.isWild;
     }
 
     equals(other) {
