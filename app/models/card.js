@@ -13,7 +13,7 @@ class Card{
          * Treating wild as a suit makes it unnecessary to create other tests for wild
          */
         this.suit = suit
-        this.artwork = `/assets/card/${suit}-${value}.png`,
+        this.artwork = `/assets/cards/${suit}_${value}.png`,
         this.type = "";
         this.isWild = false;
     }

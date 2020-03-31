@@ -100,7 +100,7 @@ class Deck extends Collection{
      */
     initDeck(){
         this.cards = []
-        const suits = ["red", "green", "yellow", "lightblue"]
+        const suits = ["red", "green", "yellow", "blue"]
         for(let suit of suits){
             /**
              * Initializes number cards for each suit
