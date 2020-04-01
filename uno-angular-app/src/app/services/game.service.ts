@@ -29,7 +29,7 @@ export class GameService {
             console.log(data);
             this._state.next(Object.assign({}, data));
             this._gameId.next(data.game.id);
-            const cardsInHand = data.hand.cards.map(card => new Card(card.value, card.suit, "", false));
+            const cardsInHand = data.hand.cards.map(card => new Card(card.value.toString(), card.suit, "", card.isWild));
             this._cards.next(Object.assign([], cardsInHand));
             this._currentPlayer.next(data.game.currentPlayer);
             this._isMyTurn.next(data.myTurn);
@@ -42,6 +42,8 @@ export class GameService {
             this._gameId.next("");
         })
     }
+
+    
 
     getCardsInHand() {
         return this._cards.asObservable();
