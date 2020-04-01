@@ -118,9 +118,9 @@ class Deck extends Collection{
              */
 
             for(let i = 0; i < 2; i++){
-                this.addCard(new Card("Skip", suit));
+                this.addCard(new Card("skip", suit));
                 this.addCard(new Card("+2", suit));
-                this.addCard(new Card("Reverse", suit));
+                this.addCard(new Card("reverse", suit));
             }
         }
 
@@ -130,7 +130,7 @@ class Deck extends Collection{
          */
 
         for(let i = 0; i < 4; i++){
-            this.addCard(new Card("Wild", "wild", true))
+            this.addCard(new Card("wild", "wild", true))
             this.addCard(new Card("+4", "wild", true))
         }
 
