@@ -30,7 +30,6 @@ export class HandComponent implements OnInit {
   } 
 
   play(card_index) {
-    console.log('PLAY', card_index)
     this.gameService.playCard(card_index);
   }
 }

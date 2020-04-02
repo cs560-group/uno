@@ -54,7 +54,6 @@ export class GameService {
     }
 
     playCard(card_index: number) {
-        console.log('PLAY-2', card_index)
         this.socket.emit("playCard", { gameId: this._state.getValue().game.id, playerId: this._state.getValue().id, card_index: card_index });
     }
 }
