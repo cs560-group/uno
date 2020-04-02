@@ -1,19 +1,13 @@
 const { v4: uuidv4 } = require("uuid");
-const { Deck } = require("../models/collection");
 const Game = require("../models/game");
-const Card = require("../models/card");
 
 const games = {};
 const gameController = {};
 
 gameController.createAndStartGame = (io, players) => {
-    const deck = new Deck([]);
-    deck.initDeck();
-    const discardPile = new Deck([]);
-    const game = new Game(generateGameId(), io, deck, discardPile);
-    game.addAllPlayers(players);
+    const game = new Game(generateGameId(), io, players);
     games[game.id] = game;
-    game.start();   
+    game.start();
 }
 
 gameController.pass = (info) => {
@@ -24,15 +18,11 @@ gameController.pass = (info) => {
 
 gameController.playCard = (data) => {
     const game = games[data.gameId];
-    const card = new Card(data.card.value, data.card.suit);
-    card.type = data.card.type;
-    card.isWild = data.card.isWild;
-    if (game && game.getCurrentPlayer().id === data.playerId && data.card && game.play(card)) {
+    if (game && game.getCurrentPlayer().id === data.playerId && data.card_index >= 0 && game.play(data.card_index)) {
         if(game.currentPlayerHasWon()) {
             game.finish();
             removeGame(game);
-        }
-        else {
+        }else {
             game.nextTurn();
         }
     }
