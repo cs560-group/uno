@@ -143,6 +143,18 @@ class Game{
     }
 
     /**
+     * Sends top card of deck to player's hand
+     * @param {integer} player 
+     */
+    draw(Player){
+        for(let i=0; i<this.drawCard; i++){
+            this.deal(Player);
+        }
+
+        this.drawCard = 0;
+    }
+
+    /**
      * Sends top card of deck to top of discard pile
      */
     discardTopOfDeck(){
@@ -241,14 +253,28 @@ class Game{
      */
     readCard(card){
         if(typeof(card.value) === "string"){
-            if(card.value === "Skip"){
-                //to be implemented
-            }else if(card.value === "Reverse"){
-                //to be implemented
+            if(card.value === "skip"){
+                this.skip = true;
+            }else if(card.value === "reverse"){
+                if(this.direction === 1){
+                    this.direction = 0;
+                }else{
+                    this.direction = 1;
+                } 
             }else if(card.value === "+2"){
-                //to be implemented
+                this.drawCard = 2;
+                if(this.direction === 1){
+                    this.draw(this.currentPlayer.left);
+                }else{
+                    this.draw(this.currentPlayer.right);
+                }
             }else if(card.value === "+4"){
-                //to be implemented
+                this.drawCard = 4;
+                if(this.direction === 1){ 
+                    this.draw(this.currentPlayer.left);
+                }else{
+                    this.draw(this.currentPlayer.right);
+                }
             }
         }
     }
