@@ -39,7 +39,7 @@ gameController.playCard = (data) => {
 }
 
 gameController.broadcastMessage = (data) => {
-    const game = games[data.gameIdf];
+    const game = games[data.gameId];
     const message = data.message;
     if (game && message) {
         game.broadcast("message", message);
