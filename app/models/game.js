@@ -208,7 +208,6 @@ class Game{
      * @param {Card} card 
      */
     isPlayable(card) {
-<<<<<<< HEAD
         return this.discards.getTopCard() === undefined || card.isLike(this.discards.getTopCard());
     }
 
@@ -222,32 +221,13 @@ class Game{
         let card = this.currentPlayer.hand.getCard(card_index)
         if(card && this.isPlayable(card)) {
             this.currentPlayer.hand.sendCard(card_index, this.discards, true);
+            this.readCard(card)
             return true;
-=======
-        const lastPlayedCard = this.discards.peekTop();
-        return lastPlayedCard === undefined || card.isLike(lastPlayedCard);
-    }
-
-    play(card) {
-        const isPlayable = this.isPlayable(card);
-        if (isPlayable) {
-            const player = this.getCurrentPlayer();
-            const index = player.hand.indexOf(card);
-            if (index != -1) {
-                player.hand.sendCard(index, this.discards, true);
-                this.readCard(card)
-                return true;
-            }
->>>>>>> action-card-init
         }
         return false;
     }
 
     /**
-<<<<<<< HEAD
-     * Checks if current player has won the game
-     */
-=======
      * Reads card and changes game state based on it's value, if necessary
      * @param {Card} card 
      */
@@ -279,7 +259,6 @@ class Game{
         }
     }
 
->>>>>>> action-card-init
     currentPlayerHasWon() {
         return this.getCurrentPlayer().hand.count() === 0;
     }
