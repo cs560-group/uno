@@ -26,6 +26,18 @@ class Collection{
     }
 
     /**
+     * Returns card from collection in position index. Does not modify collection.
+     * @param {Number} index : index of card to be removed
+     */
+    getCard(index){
+        if(index < this.cards.length && index >= 0){
+            return this.cards[index];
+        }else{
+            return false;
+        }     
+    }
+
+    /**
      * Remove card from collection. Returns removed card
      * @param {Number} index : index of card to be removed
      */
@@ -91,6 +103,9 @@ class Collection{
 class Deck extends Collection{
     constructor(cards = []){
         super(cards);
+        if(this.cards.length === 0){
+            this.initDeck()
+        }
     }
 
     /**

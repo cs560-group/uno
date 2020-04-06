@@ -1,17 +1,22 @@
 const { Collection , Deck } = require('./collection')
 
 class Game{
-    constructor(id, io, deck, discard){
+    constructor(id, io, players=[], duration=15){
         this.id = id;
         this.io = io
-        this.deck = deck;
-        this.discards = discard;
-        this.players = [];
+        this.deck = new Deck();
+        this.discards = new Collection();
+        this.players = players;
         this.turn = 0;
         this.currentPlayer = null;
+        /**
+         * Directions:
+         * 1 - left
+         * 0 - right
+         */
         this.direction = 1;
         this.skip = false;
-        this.turnDuration = 15;
+        this.turnDuration = duration;
         this.turnSecondsRemaining = this.turnDuration;
         this.currentPlayerHasPassed = false;
         this.done = false;
@@ -22,17 +27,13 @@ class Game{
         this.createRing();
     }
 
-    addAllPlayers(players) {
-        players.forEach(player => this.addPlayer(player));
-    }
-
     /**
      * Arranges Players into ring, determines the starting player, deals starting hands, starts the play timer and discards card from deck.
      * Broadcasts start event to players
      */
     start(){
         this.createRing();
-        this.currentPlayer = this.players[0];
+        this.currentPlayer = this.players[Math.floor(Math.random()*this.players.length)];
         this.currentPlayer.myTurn = true;
         this.dealInitialHands();
         this.discardTopOfDeck();
@@ -41,6 +42,9 @@ class Game{
         this.update();
     }
 
+    /**
+     * Deals initial hands to all players
+     */
     dealInitialHands() {
         const cardsPerPlayer = 7;
         const totalCardsToDeal = this.players.length * cardsPerPlayer;
@@ -86,26 +90,15 @@ class Game{
         this.turnSecondsRemaining = this.turnDuration;
     }
 
-
+    /**
+     * Sets new current player, increments turn count and resets countdown timer
+     */
     nextTurn() {
-        this.currentPlayerHasPassed = false;
-        this.currentPlayer.myTurn = false
-        if(this.direction === 1){
-            if(this.skip){
-                this.currentPlayer = this.currentPlayer.left.left
-            }else{
-                this.currentPlayer = this.currentPlayer.left
-            }
-        }else{
-            if(this.skip){
-                this.currentPlayer = this.currentPlayer.right.right
-            }else{
-                this.currentPlayer = this.currentPlayer.right
-            }
-        }
-
-        this.skip = false
+        this.currentPlayerHasPassed = false;        
+        this.currentPlayer = this.nextPlayer()
         this.currentPlayer.myTurn = true
+        
+        this.skip = false
         this.turn++
         
         this.resetCountdownTimer();
@@ -113,7 +106,28 @@ class Game{
     }
 
     /**
-     * @returns A copy of the dealt card
+     * Determines next player
+     * @returns {Player} Next Player
+     */
+    nextPlayer(){
+        this.currentPlayer.myTurn = false
+        if(this.direction === 1){
+            if(this.skip){
+                return this.currentPlayer.left.left
+            }else{
+                return this.currentPlayer.left
+            }
+        }else{
+            if(this.skip){
+                return this.currentPlayer.right.right
+            }else{
+                return this.currentPlayer.right
+            }
+        }
+    }
+
+    /**
+     * @returns {Card} A copy of the dealt card
      */
     dealCurrentPlayer() {
         return this.deal(this.getCurrentPlayer());
@@ -151,7 +165,7 @@ class Game{
             id: this.id,
             discard: { 
                 cards: this.discards.getState(true),
-                top: this.discards.peekTop()
+                top: this.discards.getTopCard()
             },
             deck: this.deck.getState(),
             currentPlayer: this.currentPlayer.name
@@ -160,6 +174,60 @@ class Game{
 
     getCurrentPlayer() {
         return this.currentPlayer;
+    }
+
+    /**
+     * @returns True if the player has passed, otherwise false if the current player has already passed on their turn.
+     */
+    passCurrentTurn() {
+        if (this.currentPlayerHasPassed) {
+            return false;
+        }
+        this.currentPlayerHasPassed = true;
+        const dealtCard = this.dealCurrentPlayer();
+        if (!this.isPlayable(dealtCard))
+            this.nextTurn();
+        this.update();
+        return true;
+    }
+
+    /**
+     * Determines if a card is playable in current gamestate
+     * @param {Card} card 
+     */
+    isPlayable(card) {
+        return this.discards.getTopCard() === undefined || card.isLike(this.discards.getTopCard());
+    }
+
+    /**
+     * Attempts to play card from current player's hand.
+     * @param {number} card_index 
+     * @returns {Boolean} true if card is played
+     * @returns {Boolean} false if it cannot be played
+     */
+    play(card_index) {
+        let card = this.currentPlayer.hand.getCard(card_index)
+        if(card && this.isPlayable(card)) {
+            this.currentPlayer.hand.sendCard(card_index, this.discards, true);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks if current player has won the game
+     */
+    currentPlayerHasWon() {
+        return this.getCurrentPlayer().hand.count() === 0;
+    }
+
+    /**
+     * Broadcasts winner to all players
+     */
+    finish() {
+        this.done = true;
+        this.update();
+        this.broadcast("gameOver", { winner: this.getCurrentPlayer().name });
     }
 
     /**
@@ -191,50 +259,7 @@ class Game{
      */
     emitTo(player, event, data) {
         this.io.to(player.id).emit(event, data);
-    }
-
-    /**
-     * @returns True if the player has passed, otherwise false if the current player has already passed on their turn.
-     */
-    passCurrentTurn() {
-        if (this.currentPlayerHasPassed) {
-            return false;
-        }
-        this.currentPlayerHasPassed = true;
-        const dealtCard = this.dealCurrentPlayer();
-        if (!this.isPlayable(dealtCard))
-            this.nextTurn();
-        this.update();
-        return true;
-    }
-
-    isPlayable(card) {
-        const lastPlayedCard = this.discards.peekTop();
-        return lastPlayedCard === undefined || card.isLike(lastPlayedCard);
-    }
-
-    play(card) {
-        const isPlayable = this.isPlayable(card);
-        if (isPlayable) {
-            const player = this.getCurrentPlayer();
-            const index = player.hand.indexOf(card);
-            if (index != -1) {
-                player.hand.sendCard(index, this.discards, true);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    currentPlayerHasWon() {
-        return this.getCurrentPlayer().hand.count() === 0;
-    }
-
-    finish() {
-        this.done = true;
-        this.update();
-        this.broadcast("gameOver", { winner: this.getCurrentPlayer().name });
-    }
+    }    
 }
 
 module.exports = Game;

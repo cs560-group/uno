@@ -29,7 +29,7 @@ export class HandComponent implements OnInit {
     this.gameService.pass();
   } 
 
-  play(card) {
-    this.gameService.playCard(card);
+  play(card_index) {
+    this.gameService.playCard(card_index);
   }
 }

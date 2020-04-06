@@ -53,7 +53,7 @@ export class GameService {
         this.socket.emit("pass", { gameId: this._state.getValue().game.id, playerId: this._state.getValue().id });
     }
 
-    playCard(cardToPlay) {
-        this.socket.emit("playCard", { gameId: this._state.getValue().game.id, playerId: this._state.getValue().id, card: cardToPlay });
+    playCard(card_index: number) {
+        this.socket.emit("playCard", { gameId: this._state.getValue().game.id, playerId: this._state.getValue().id, card_index: card_index });
     }
 }
