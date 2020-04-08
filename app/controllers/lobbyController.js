@@ -1,7 +1,7 @@
 const Player = require('../models/player');
 
 let queue = []
-let num_players = 2;
+let num_players = 3;
 
 const lobbyController = {};
 

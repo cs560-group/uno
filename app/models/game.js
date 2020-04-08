@@ -143,6 +143,17 @@ class Game{
     }
 
     /**
+     * Sends top card of deck to player's hand
+     * @param {Player} player 
+     * @param {Number} number
+     */
+    draw(player, number){
+        for(let i = 0; i < number; i++){
+            this.deal(player);
+        }
+    }
+
+    /**
      * Sends top card of deck to top of discard pile
      */
     discardTopOfDeck(){
@@ -205,18 +216,57 @@ class Game{
      * @returns {Boolean} true if card is played
      * @returns {Boolean} false if it cannot be played
      */
-    play(card_index) {
+    play(card_index, suit) {
         let card = this.currentPlayer.hand.getCard(card_index)
         if(card && this.isPlayable(card)) {
+
+            if(card.isWild && !suit){
+                this.emitTo(this.currentPlayer, "suit", {index: card_index})
+                return false;
+            }else if(card.isWild && suit){
+                card.changeSuit(suit)
+            }
+
             this.currentPlayer.hand.sendCard(card_index, this.discards, true);
+            this.readCard(card)
             return true;
         }
         return false;
     }
 
     /**
-     * Checks if current player has won the game
+     * Reads card and changes game state based on it's value, if necessary
+     * @param {Card} card 
      */
+    readCard(card){
+        let actions = ["skip", "reverse", "+2", "+4"]
+        if(actions.includes(card.value)){
+            if(card.value === "skip"){
+                this.skip = true;
+            }else if(card.value === "reverse"){
+                if(this.direction === 1){   
+                    this.direction = 0;
+                }else{
+                    this.direction = 1;
+                } 
+            }else if(card.value === "+2"){
+                if(this.direction === 1){
+                    this.draw(this.currentPlayer.left, 4);
+                }else{
+                    this.draw(this.currentPlayer.right, 4);
+                }
+                this.skip = true;
+            }else if(card.value === "+4"){
+                if(this.direction === 1){ 
+                    this.draw(this.currentPlayer.left, 4);
+                }else{
+                    this.draw(this.currentPlayer.right, 4);
+                }
+                this.skip = true
+            }
+        }
+    }
+
     currentPlayerHasWon() {
         return this.getCurrentPlayer().hand.count() === 0;
     }

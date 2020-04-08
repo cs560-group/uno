@@ -1,10 +1,10 @@
 class Card{
-    constructor(value, suit){
+    constructor(value, suit, isWild){
         
         /**
          * Values may be numbers or actions
          * Numbers: 0-9
-         * Actions: 'Draw 2', 'Reverse', 'Skip', 'Draw 4', 'Wild'
+         * Actions: '+2', 'reverse', 'skip', '+4', 'wild'
          */
         this.value = value        
 
@@ -14,7 +14,15 @@ class Card{
          */
         this.suit = suit
         this.type = "";
-        this.isWild = false;
+        this.isWild = isWild;
+    }
+
+    changeSuit(suit){
+        let suits = ['red', 'green', 'yellow', 'blue']
+        if(this.isWild && suits.includes(suit)){
+            this.suit = suit
+            this.isWild = false
+        }
     }
 
     /**

@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import {Card} from "@app/models/card";
 import { GameService } from '@app/services/game.service';
+import { getSupportedInputTypes } from '@angular/cdk/platform';
 
 @Component({
   selector: 'app-hand',
@@ -12,7 +13,8 @@ export class HandComponent implements OnInit {
   count: number = 0;
   isMyTurn: boolean = false;
   private hasPassed: boolean = false;
-  
+
+  selectSuit: any;
 
   constructor(private gameService: GameService) { }
 
@@ -22,6 +24,9 @@ export class HandComponent implements OnInit {
       this.isMyTurn = isTurn
       this.hasPassed = false;
     });
+    this.gameService.selectSuit.subscribe(select => {
+      this.selectSuit = select;
+    })
   }
 
   pass() {
@@ -29,7 +34,12 @@ export class HandComponent implements OnInit {
     this.gameService.pass();
   } 
 
-  play(card_index) {
+  playWild(suit: string){
+    console.log(this.selectSuit.index, suit)
+    this.gameService.playCard(this.selectSuit.index, suit);
+  }
+
+  play(card_index: number) {
     this.gameService.playCard(card_index);
   }
 }

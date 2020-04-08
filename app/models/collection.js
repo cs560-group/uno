@@ -110,8 +110,6 @@ class Deck extends Collection{
 
     /**
      * Initializes Deck of cards.
-     * Only creates coloured number cards for now
-     * Will extend for future splits
      */
     initDeck(){
         this.cards = []
@@ -132,15 +130,24 @@ class Deck extends Collection{
             /**
              * Initialize Skip, Draw 2 and Reverse Cards for each suit
              * 2 each
-             * *To be added*
              */
+
+            for(let i = 0; i < 2; i++){
+                this.addCard(new Card("skip", suit));
+                this.addCard(new Card("+2", suit));
+                this.addCard(new Card("reverse", suit));
+            }
         }
 
         /**
          * Initialize Wild cards and Wild Draw 4 cards
          * 4 each
-         * *To be added*
          */
+
+        for(let i = 0; i < 4; i++){
+            this.addCard(new Card("wild", "wild", true))
+            this.addCard(new Card("+4", "wild", true))
+        }
 
         this.shuffle()
     }
