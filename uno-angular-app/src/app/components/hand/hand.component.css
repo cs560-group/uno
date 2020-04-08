@@ -16,3 +16,23 @@ mat-card-header {
     min-height: 180px;
     max-height: 180px;
 }
+
+.suit-menu button{
+    color: white
+}
+
+.suit-menu .red{
+    background-color: #f56462;
+}
+
+.suit-menu .green{
+    background-color: #2fe29b;
+}
+
+.suit-menu .blue{
+    background-color: #00c3e5;
+}
+
+.suit-menu .yellow{
+    background-color: #f7e359;
+}

@@ -18,7 +18,7 @@ gameController.pass = (info) => {
 
 gameController.playCard = (data) => {
     const game = games[data.gameId];
-    if (game && game.getCurrentPlayer().id === data.playerId && data.card_index >= 0 && game.play(data.card_index)) {
+    if (game && game.getCurrentPlayer().id === data.playerId && data.card_index >= 0 && game.play(data.card_index, data.suit)) {
         if(game.currentPlayerHasWon()) {
             game.finish();
             removeGame(game);

@@ -23,6 +23,8 @@ export class GameService {
     readonly winner = this._winner.asObservable();
     private _gameId = new BehaviorSubject<string>("");
     readonly gameId = this._gameId.asObservable();
+    private _selectSuit = new BehaviorSubject<any>({select: false, index: 0});
+    readonly selectSuit = this._selectSuit.asObservable();
 
     constructor(private socket: Socket) {
         this.socket.on("update", (data) => {
@@ -41,9 +43,11 @@ export class GameService {
             this._gameIsOver.next(true);
             this._gameId.next("");
         })
-    }
 
-    
+        this.socket.on("suit", (data) => {
+            this._selectSuit.next({select: true, index: data.index});
+        })
+    }   
 
     getCardsInHand() {
         return this._cards.asObservable();
@@ -53,7 +57,10 @@ export class GameService {
         this.socket.emit("pass", { gameId: this._state.getValue().game.id, playerId: this._state.getValue().id });
     }
 
-    playCard(card_index: number) {
-        this.socket.emit("playCard", { gameId: this._state.getValue().game.id, playerId: this._state.getValue().id, card_index: card_index });
+    playCard(card_index: number, suit: string = null) {
+        this.socket.emit("playCard", { gameId: this._state.getValue().game.id, playerId: this._state.getValue().id, card_index: card_index, suit: suit});
+        if(suit){
+            this._selectSuit.next({select: false, index: 0});
+        }
     }
 }
