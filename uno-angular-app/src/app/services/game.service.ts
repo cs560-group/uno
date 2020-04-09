@@ -25,6 +25,8 @@ export class GameService {
     readonly gameId = this._gameId.asObservable();
     private _selectSuit = new BehaviorSubject<any>({select: false, index: 0});
     readonly selectSuit = this._selectSuit.asObservable();
+    private _players = new BehaviorSubject<[]>([]);
+    readonly players = this._players.asObservable();
 
     constructor(private socket: Socket) {
         this.socket.on("update", (data) => {
@@ -36,6 +38,7 @@ export class GameService {
             this._currentPlayer.next(data.game.currentPlayer);
             this._isMyTurn.next(data.myTurn);
             this._discard.next(data.game.discard.top);
+            this._players.next(data.players);
         });
 
         this.socket.on("gameOver", (data) => {

@@ -22,6 +22,8 @@ import {MatDividerModule} from '@angular/material/divider';
 import {MatListModule} from '@angular/material/list';
 import { RegistrationComponent } from './components/registration/registration.component';
 import { ChatComponent } from './components/chat/chat.component';
+import { PlayersComponent } from './components/players/players.component';
+import { PlayerComponent } from './components/player/player.component';
 
 
 const config: SocketIoConfig = { url: 'http://localhost:8080', options: {} };
@@ -38,7 +40,9 @@ const appRoutes: Routes = [
     LobbyComponent,
     GameComponent,
     RegistrationComponent,
-    ChatComponent
+    ChatComponent,
+    PlayersComponent,
+    PlayerComponent
   ],
   imports: [
     BrowserModule,
