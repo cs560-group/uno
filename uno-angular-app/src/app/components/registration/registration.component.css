@@ -1,3 +1,15 @@
+.main-div{
+    height: 91.5vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url(assets\image\background2.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+}
+
 mat-card {
     display: inline-block;
     min-width: auto;
@@ -7,6 +19,10 @@ mat-card {
     border-radius: 10px;
 }
 
+mat-form-field{
+    width: 275px;
+}
+
 .mat-card-title {
     text-align: center;
 }
@@ -14,3 +30,4 @@ mat-card {
 button {
     margin-left: 10px;
 }
+

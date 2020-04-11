@@ -1,10 +1,14 @@
-<mat-card>
-    <mat-card-title>Join A Lobby</mat-card-title>
-    <form>
-        <mat-form-field>
-            <mat-label for="username">Display Name</mat-label>
-            <input matInput name="username" type="text" placeholder="Ex. Bob" [(ngModel)]="username">
-        </mat-form-field>
-        <button mat-raised-button name="setName" type="submit" (click)="joinLobby()" [disabled]="username.length === 0">Join</button>
-    </form>
-</mat-card>
+<div class="main-div">
+
+    <mat-card>
+        <mat-card-title >Join A Lobby</mat-card-title>
+        <form>
+            <mat-form-field>
+                <mat-label for="username">Display Name</mat-label>
+                <input matInput name="username" type="text" placeholder="Ex. Bob" [(ngModel)]="username">
+            </mat-form-field>
+            <button mat-raised-button name="setName" type="submit" (click)="joinLobby()" [disabled]="username.length === 0">Join</button>
+        </form>
+    </mat-card>
+
+</div>

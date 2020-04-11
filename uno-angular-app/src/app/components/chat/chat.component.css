@@ -4,9 +4,11 @@
     display: inline-flex;
     flex-direction: column;
     border: solid black 2px;
-    width: 500px;
-    height: 150px;
-    margin: 10px;
+    width: 15%;
+    height: 45vh;
+    left: 10px;
+    position: absolute;
+    display: flex; 
 }
 
 .message-container {
