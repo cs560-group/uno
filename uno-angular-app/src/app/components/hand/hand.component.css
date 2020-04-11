@@ -21,18 +21,18 @@ mat-card-header {
     color: white
 }
 
-.suit-menu .red{
+.red{
     background-color: #f56462;
 }
 
-.suit-menu .green{
+.green{
     background-color: #2fe29b;
 }
 
-.suit-menu .blue{
+.blue{
     background-color: #00c3e5;
 }
 
-.suit-menu .yellow{
+.yellow{
     background-color: #f7e359;
 }

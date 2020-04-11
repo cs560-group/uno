@@ -7,7 +7,14 @@
             <button class="green" mat-raised-button (click)="playWild('green')">Green</button>
             <button class="yellow" mat-raised-button (click)="playWild('yellow')">Yellow</button>
             <button class="blue" mat-raised-button (click)="playWild('blue')">Blue</button>
-        </div>       
+        </div>   
+        <div *ngIf="challenge" id="challenge-menu">
+            <p>Do you want to challenge {{challenge.name}}'s Draw 4?</p>
+            <div>
+                <button class="green" mat-raised-button (click)="makeChallenge(true)">Yes</button>
+                <button class="red" mat-raised-button (click)="makeChallenge(false)">No</button>
+            </div>
+        </div>    
     </mat-card-header>
     <mat-card-content class="container">
         <app-card *ngFor="let card of cards; let indx=index;" [card]="card" (click)="play(indx)"></app-card>     

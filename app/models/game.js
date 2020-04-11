@@ -39,6 +39,7 @@ class Game{
         this.discardTopOfDeck();
         this.broadcast("start", this.id);
         this.countdown();
+        this.turn = 1;
         this.update();
     }
 
@@ -48,9 +49,9 @@ class Game{
     dealInitialHands() {
         const cardsPerPlayer = 7;
         const totalCardsToDeal = this.players.length * cardsPerPlayer;
-        for (let i = 0; i < totalCardsToDeal; i++) {
+        for (let i = 0; i < totalCardsToDeal; i++){
             this.dealCurrentPlayer();
-            this.nextTurn();
+            this.nextTurn(false);
         }
     }
 
@@ -93,13 +94,15 @@ class Game{
     /**
      * Sets new current player, increments turn count and resets countdown timer
      */
-    nextTurn() {
+    nextTurn(incrementTurn=true) {
         this.currentPlayerHasPassed = false;        
         this.currentPlayer = this.nextPlayer()
         this.currentPlayer.myTurn = true
         
         this.skip = false
-        this.turn++
+        if(incrementTurn){
+            this.turn++
+        }
         
         this.resetCountdownTimer();
         this.update();
@@ -139,11 +142,16 @@ class Game{
      * @returns A copy of the dealt card
      */
     deal(player){
-        return this.deck.sendTop(player.hand, false);
+        if(this.deck.count === 0){
+            this.resetDeck();
+        }        
+        let card = this.deck.sendTop(player.hand, false)
+        this.update();
+        return card;
     }
 
     /**
-     * Sends top card of deck to player's hand
+     * Sends a nummber of cards from the top of thedeck to the a player's hand
      * @param {Player} player 
      * @param {Number} number
      */
@@ -157,7 +165,14 @@ class Game{
      * Sends top card of deck to top of discard pile
      */
     discardTopOfDeck(){
-        this.deck.sendTop(this.discards, true)
+        let card = this.deck.sendTop(this.discards, true)
+        while(card.isWild && this.turn === 1){
+            card = this.discards.getTopCard();
+            this.discards.sendCard(0, this.deck);
+            this.deck.shuffle();
+            this.deck.sendTop(this.discards, true);
+            card = this.discards.getTopCard();
+        }
     }
 
     /**
@@ -169,17 +184,15 @@ class Game{
     }
 
     /**
-     * Represent public gamestate
+     * Switches Deck and discard pile if the deck has no cards left.
      */
-    getState(){
-        return {
-            id: this.id,
-            discard: { 
-                cards: this.discards.getState(true),
-                top: this.discards.getTopCard()
-            },
-            deck: this.deck.getState(),
-            currentPlayer: this.currentPlayer.name
+    resetDeck(){
+        if(this.deck.count() == 0){
+            let cards = this.discards.cards
+            this.deck = new Deck(cards)
+            this.discards = new Collection()
+            this.discardTopOfDeck()
+            this.deck.shuffle()
         }
     }
 
@@ -211,6 +224,20 @@ class Game{
     }
 
     /**
+     * Checks a players hand to see if they have playable cards in their hand other than Wild Draw 4 cards.
+     * @param {Player} player 
+     * @returns {boolean} true if draw 4 cards are the only playable cards false if other playable cards are available.
+     */
+    checkHand(player, card) {
+        for(let c of player.hand.cards){
+            if(c.isLike(card) && c.value !== "+4"){
+                return false
+            }
+        }
+        return true
+    }
+
+    /**
      * Attempts to play card from current player's hand.
      * @param {number} card_index 
      * @returns {Boolean} true if card is played
@@ -218,7 +245,13 @@ class Game{
      */
     play(card_index, suit) {
         let card = this.currentPlayer.hand.getCard(card_index)
-        if(card && this.isPlayable(card)) {
+        
+        //If a player has passed, they can only play the drawn card which would be the last card in their hand.
+        if(this.currentPlayerHasPassed  && card_index !== this.currentPlayer.hand.count() - 1){
+            return false
+        }
+        
+        if(card && this.isPlayable(card)){
 
             if(card.isWild && !suit){
                 this.emitTo(this.currentPlayer, "suit", {index: card_index})
@@ -250,20 +283,37 @@ class Game{
                     this.direction = 1;
                 } 
             }else if(card.value === "+2"){
-                if(this.direction === 1){
-                    this.draw(this.currentPlayer.left, 4);
-                }else{
-                    this.draw(this.currentPlayer.right, 4);
+                this.draw(this.nextPlayer(), 2);
+                if(this.turn > 1){
+                    this.skip = true;
                 }
-                this.skip = true;
             }else if(card.value === "+4"){
-                if(this.direction === 1){ 
-                    this.draw(this.currentPlayer.left, 4);
-                }else{
-                    this.draw(this.currentPlayer.right, 4);
-                }
-                this.skip = true
+               this.emitTo(this.nextPlayer(), 'challenge', {name: this.currentPlayer.name});
             }
+        }
+    }
+
+    /**
+     * Challenges the play of a Wild Draw 4 card.
+     * If the player played the +4 card illgally, they draw 4, otherwise challenging player draws 6
+     * @param {boolean} doesChallenge 
+     */
+    challenge(doesChallenge){
+        if(doesChallenge){
+            let prevPlayer;
+            if(this.direction === 1){
+                prevPlayer = this.currentPlayer.right;
+            }else{
+                prevPlayer = this.currentPlayer.left;
+            }
+
+            if(this.checkHand(prevPlayer,this.discards.getCard(1))){
+                this.draw(this.currentPlayer, 6);
+            }else{
+                this.draw(prevPlayer, 4);
+            }
+        }else{
+            this.draw(this.currentPlayer, 4);
         }
     }
 
@@ -278,6 +328,21 @@ class Game{
         this.done = true;
         this.update();
         this.broadcast("gameOver", { winner: this.getCurrentPlayer().name });
+    }
+
+    /**
+     * Represent public gamestate
+     */
+    getState(){
+        return {
+            id: this.id,
+            discard: { 
+                cards: this.discards.getState(true),
+                top: this.discards.getTopCard()
+            },
+            deck: this.deck.getState(),
+            currentPlayer: this.currentPlayer.name
+        }
     }
 
     /**
