@@ -1,15 +1,28 @@
-<mat-card class="card">
-    <mat-card-title>Current Player: {{currentPlayer}}</mat-card-title>
-</mat-card>
 
-<app-chat></app-chat>
-
-<div class="hand-discard-container">
-    <mat-card class="discard-container">
-        <mat-card-title>Discard Pile</mat-card-title>
-        <mat-card-content>
-            <app-card [card]="discard"></app-card>
-        </mat-card-content>
+    <mat-card class="card">
+        <mat-card-title>Current Player: {{currentPlayer}}</mat-card-title>
     </mat-card>
-    <app-hand></app-hand>
+
+
+
+<div class = gamebackground>
+
+    <div class="player-chat-container">
+        <div class="chat-container">
+            <app-chat></app-chat>
+        </div>
+        <div class="players-container">
+            <app-players></app-players>
+        </div>   
+    </div>
+    
+        <div class="hand-discard-container">
+            <mat-card class="discard-container">
+                <mat-card-title>Discard Pile</mat-card-title>
+                <mat-card-content>
+                    <app-card [card]="discard"></app-card>
+                </mat-card-content>
+            </mat-card>
+            <app-hand></app-hand>
+        </div>
 </div>

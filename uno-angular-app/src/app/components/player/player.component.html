@@ -1,0 +1,9 @@
+<mat-card class="player">
+    <h2>{{player.name}} <span *ngIf="player.myTurn">*</span></h2>
+    <h5>Cards Left: {{cards.length}}</h5>
+    <div class="container">
+        <div class="card" *ngFor="let card of cards">
+            <img src="assets/cards/card_back.png" alt="UNO">
+        </div>
+    </div>
+</mat-card>

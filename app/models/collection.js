@@ -50,7 +50,7 @@ class Collection{
     }
 
     /**
-     * Sends card to another collection
+     * Sends card to anther collection
      * @param {Number} index : index of card to be sent
      * @param {Collection} destination : destination Collection
      * @param {Boolean} toTop : true if card should be added on top of Collection

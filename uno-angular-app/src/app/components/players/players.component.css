@@ -1,0 +1,21 @@
+.players-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+    overflow-y: scroll;
+    border-radius: 10px;
+    position: relative;
+}
+
+.player {
+    margin: 10px;
+}
+
+mat-card {
+    border: solid black 2px;
+}
+
+mat-card-header {
+    margin-bottom: 10px;
+}

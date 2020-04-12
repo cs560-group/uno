@@ -15,10 +15,34 @@ app-hand {
     margin: 10px;
 }
 
+.player-chat-container {
+    flex-direction: row;
+    margin: 10px;
+    
+}
+
+.players-container {
+    float: right;
+    width: 80%;
+}
+
 .hand-discard-container {
     position: absolute;
     width: 100%;
     bottom: 0;
     display: flex;
     flex-direction: row;
+
+}
+
+.gamebackground{
+    height: 83vh;
+    display: flex;
+    justify-content: center;
+    align-items: middle;
+    background-image: url(assets\image\background2.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
 }
