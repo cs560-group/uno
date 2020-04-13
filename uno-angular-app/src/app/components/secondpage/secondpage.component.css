@@ -1,10 +1,12 @@
-.main{
+
+.secondpage-div{
     height: 91.5vh;
     display: flex;
     justify-content: center;
     text-align: center;
     position: relative;
 }
+
 
 #backgroundimg {
     max-width: 100%;
@@ -15,19 +17,16 @@
     margin-right: auto;
     opacity: 0.2;
     position: relative;
+    
 }
 
-
-mat-card {
+.singlemat{
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    margin: 10px;
     flex-direction: column;
-    display: inline-block;
-    min-width: auto;
-    width: 350px;
-    margin: 10px auto;
-    border: solid 2px dodgerblue;
-    border-radius: 10px;
 }
+
+

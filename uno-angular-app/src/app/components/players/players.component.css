@@ -1,11 +1,10 @@
 .players-container {
     display: flex;
-    flex-direction: row;
-    justify-content: center;
+    flex-direction: column;
     flex-wrap: wrap;
     overflow-y: scroll;
     border-radius: 10px;
-    position: relative;
+    
 }
 
 .player {

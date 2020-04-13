@@ -1,0 +1,21 @@
+.firstpage-div{
+    position: relative;
+    height: 91.5vh;
+}
+
+#backgroundimg {
+    max-width: 90%;
+    max-height: 90%;
+    height: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.btndiv{
+    align-content: middle;
+    position: absolute;
+    margin-left: 50%;
+}
+
+

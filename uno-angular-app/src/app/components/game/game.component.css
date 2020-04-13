@@ -18,29 +18,38 @@ app-hand {
 .player-chat-container {
     flex-direction: row;
     margin: 10px;
-    
+    width: 100%;
 }
 
 .players-container {
-    float: right;
-    width: 80%;
+    margin: 10px;
+    flex-direction: row;
+    justify-content: center;
+    position: absolute;
+    right: 0;
 }
 
 .hand-discard-container {
     position: absolute;
-    width: 100%;
+    width: 65%;
     bottom: 0;
     display: flex;
     flex-direction: row;
 
 }
 
+.discard-container{
+    position: absolute;
+    align-items: center;
+    bottom: 50%;
+}
+
 .gamebackground{
-    height: 83vh;
+    height: 86vh;
     display: flex;
     justify-content: center;
     align-items: middle;
-    background-image: url(assets\image\background2.png);
+    background-image: url(assets\image\blue.png);
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
