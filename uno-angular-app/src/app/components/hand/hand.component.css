@@ -13,8 +13,8 @@ mat-card-header {
     flex-wrap: wrap;
     overflow-y: scroll;
     border-radius: 10px;
-    min-height: 180px;
-    max-height: 180px;
+    min-height: 150px;
+    max-height: 150px;
 }
 
 .suit-menu button{

@@ -20,8 +20,9 @@ mat-card {
 .container {
     display: flex;
     flex-direction: row;
-    justify-content: center;
     flex-wrap: wrap;
     overflow-y: scroll;
     border-radius: 10px;
+    max-width: 150px;
+    max-height: 9vh;
 }

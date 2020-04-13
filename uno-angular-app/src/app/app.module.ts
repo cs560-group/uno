@@ -24,6 +24,8 @@ import { RegistrationComponent } from './components/registration/registration.co
 import { ChatComponent } from './components/chat/chat.component';
 import { PlayersComponent } from './components/players/players.component';
 import { PlayerComponent } from './components/player/player.component';
+import { firstpageComponent } from './components/firstpage/firstpage.component';
+import { secondpageComponent } from './components/secondpage/secondpage.component';
 
 
 const config: SocketIoConfig = { url: 'http://localhost:8080', options: {} };
@@ -42,7 +44,9 @@ const appRoutes: Routes = [
     RegistrationComponent,
     ChatComponent,
     PlayersComponent,
-    PlayerComponent
+    PlayerComponent,
+    firstpageComponent,
+    secondpageComponent,
   ],
   imports: [
     BrowserModule,
