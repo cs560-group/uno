@@ -19,6 +19,7 @@ class Game{
         this.turnDuration = duration;
         this.turnSecondsRemaining = this.turnDuration;
         this.currentPlayerHasPassed = false;
+        this.challengeActive = false;
         this.done = false;
     }
 
@@ -35,11 +36,11 @@ class Game{
         this.createRing();
         this.currentPlayer = this.players[Math.floor(Math.random()*this.players.length)];
         this.currentPlayer.myTurn = true;
+        this.turn = 1;
         this.dealInitialHands();
         this.discardTopOfDeck();
         this.broadcast("start", this.id);
         this.countdown();
-        this.turn = 1;
         this.update();
     }
 
@@ -74,10 +75,15 @@ class Game{
     countdown() {
         const oneSecond = 1000;
         setInterval(() => {
-            this.io.emit('countdown', this.turnSecondsRemaining)
+            this.broadcast('countdown', this.turnSecondsRemaining)
             if(this.turnSecondsRemaining <= 0) {
-                //Current player draws if the timer goes to 0
-                this.dealCurrentPlayer();
+                if(this.challengeActive){
+                    this.challenge(false)
+                    this.emitTo(this.currentPlayer, "clearChallenge", null)
+                }else{
+                    //Current player draws if the timer goes to 0
+                    this.dealCurrentPlayer();
+                }
                 this.nextTurn();
             }
             --this.turnSecondsRemaining;
@@ -166,7 +172,7 @@ class Game{
      */
     discardTopOfDeck(){
         let card = this.deck.sendTop(this.discards, true)
-        while(card.isWild && this.turn === 1){
+        while((card.value === "+4" || card.value === "wild") && this.turn === 1){
             card = this.discards.getTopCard();
             this.discards.sendCard(0, this.deck);
             this.deck.shuffle();
@@ -289,6 +295,7 @@ class Game{
                 }
             }else if(card.value === "+4"){
                this.emitTo(this.nextPlayer(), 'challenge', {name: this.currentPlayer.name});
+               this.challengeActive = true;
             }
         }
     }
@@ -315,6 +322,7 @@ class Game{
         }else{
             this.draw(this.currentPlayer, 4);
         }
+        this.challengeActive = false;
     }
 
     currentPlayerHasWon() {

@@ -55,6 +55,6 @@ export class HandComponent implements OnInit {
   }
 
   makeChallenge(challenge:boolean){
-    this.gameService.makeChallenge(true);
+    this.gameService.makeChallenge(challenge);
   }
 }

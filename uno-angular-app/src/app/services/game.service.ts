@@ -60,6 +60,10 @@ export class GameService {
         this.socket.on("challenge", data => {
             this._challenge.next(data)
         })
+
+        this.socket.on("clearChallenge", () => {
+            this._challenge.next(null)
+        })
     }   
 
     getCardsInHand() {
@@ -71,7 +75,7 @@ export class GameService {
     }
 
     makeChallenge(challenge:boolean){
-        this.socket.emit("challenge", { gameId: this._state.getValue().game.id, playerId: this._state.getValue().id, challenge: challenge });
+        this.socket.emit("challenge", { gameId: this._state.getValue().game.id, playerId: this._state.getValue().id, challenge: challenge});
         this._challenge.next(null);
     }
 
