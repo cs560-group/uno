@@ -29,6 +29,8 @@ export class GameService {
     readonly players = this._players.asObservable();
     private _challenge = new BehaviorSubject<any>(null);
     readonly challenge = this._challenge.asObservable();
+    private _timer = new BehaviorSubject<number>(15);
+    readonly timer = this._timer.asObservable();
 
     constructor(private socket: Socket) {
         this.socket.on("update", (data) => {
@@ -63,6 +65,10 @@ export class GameService {
 
         this.socket.on("clearChallenge", () => {
             this._challenge.next(null)
+        })
+        
+        this.socket.on("countdown", (data) => {
+            this._timer.next(data);
         })
     }   
 

@@ -15,6 +15,7 @@ export class GameComponent implements OnInit {
   private discard: Card;
   private gameIsOver: boolean = false;
   private winner: string = "";
+  private gameTimer: string = "15";
 
   constructor(private gameService: GameService, private userService: UserService, private router: Router) { }
 
@@ -30,6 +31,9 @@ export class GameComponent implements OnInit {
         alert(`The winner is ${this.winner}`);
       }
     });
+
+    this.gameService.timer.subscribe(timer => this.gameTimer = timer.toString());
+
     this.gameService.winner.subscribe(winner => this.winner = winner);
   }
 
