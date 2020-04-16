@@ -15,6 +15,7 @@ export class HandComponent implements OnInit {
   private hasPassed: boolean = false;
 
   selectSuit: any;
+  challenge: any;
 
   constructor(private gameService: GameService) { }
 
@@ -24,22 +25,36 @@ export class HandComponent implements OnInit {
       this.isMyTurn = isTurn
       this.hasPassed = false;
     });
+
     this.gameService.selectSuit.subscribe(select => {
       this.selectSuit = select;
-    })
+    });
+
+    this.gameService.challenge.subscribe(challenge => {
+      this.challenge = challenge;
+    });
   }
 
   pass() {
-    this.hasPassed = true;
-    this.gameService.pass();
+    if(!this.challenge){
+      this.hasPassed = true;
+      this.gameService.pass();  
+    }     
   } 
 
   playWild(suit: string){
-    console.log(this.selectSuit.index, suit)
-    this.gameService.playCard(this.selectSuit.index, suit);
+    if(!this.challenge){
+      this.gameService.playCard(this.selectSuit.index, suit);
+    }
   }
 
   play(card_index: number) {
-    this.gameService.playCard(card_index);
+    if(!this.challenge){
+      this.gameService.playCard(card_index);  
+    }    
+  }
+
+  makeChallenge(challenge:boolean){
+    this.gameService.makeChallenge(challenge);
   }
 }

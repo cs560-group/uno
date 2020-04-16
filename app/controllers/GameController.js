@@ -28,6 +28,14 @@ gameController.playCard = (data) => {
     }
 }
 
+gameController.challenge = (data) => {
+    const game = games[data.gameId];
+    if (game && game.getCurrentPlayer().id === data.playerId) {
+        game.challenge(data.challenge);
+        game.nextTurn();
+    }
+}
+
 gameController.broadcastMessage = (data) => {
     const game = games[data.gameId];
     const message = data.message;
@@ -40,6 +48,7 @@ gameController.addSocketListeners = (socket) => {
     socket.on("pass", gameController.pass);
     socket.on("playCard", gameController.playCard);
     socket.on("message", gameController.broadcastMessage);
+    socket.on("challenge", gameController.challenge)
 }
 
 function generateGameId() {

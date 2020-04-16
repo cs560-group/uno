@@ -27,11 +27,17 @@ export class GameService {
     readonly selectSuit = this._selectSuit.asObservable();
     private _players = new BehaviorSubject<[]>([]);
     readonly players = this._players.asObservable();
+    private _challenge = new BehaviorSubject<any>(null);
+    readonly challenge = this._challenge.asObservable();
     private _timer = new BehaviorSubject<number>(15);
     readonly timer = this._timer.asObservable();
 
     constructor(private socket: Socket) {
         this.socket.on("update", (data) => {
+
+            this._winner.next("");
+            this._gameIsOver.next(false);
+
             console.log(data);
             this._state.next(Object.assign({}, data));
             this._gameId.next(data.game.id);
@@ -53,6 +59,14 @@ export class GameService {
             this._selectSuit.next({select: true, index: data.index});
         })
 
+        this.socket.on("challenge", data => {
+            this._challenge.next(data)
+        })
+
+        this.socket.on("clearChallenge", () => {
+            this._challenge.next(null)
+        })
+        
         this.socket.on("countdown", (data) => {
             this._timer.next(data);
         })
@@ -64,6 +78,11 @@ export class GameService {
 
     pass() {
         this.socket.emit("pass", { gameId: this._state.getValue().game.id, playerId: this._state.getValue().id });
+    }
+
+    makeChallenge(challenge:boolean){
+        this.socket.emit("challenge", { gameId: this._state.getValue().game.id, playerId: this._state.getValue().id, challenge: challenge});
+        this._challenge.next(null);
     }
 
     playCard(card_index: number, suit: string = null) {
