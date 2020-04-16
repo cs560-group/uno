@@ -54,7 +54,7 @@ export class GameService {
         })
 
         this.socket.on("countdown", (data) => {
-            this._timer.next(data.timer);
+            this._timer.next(data);
         })
     }   
 
