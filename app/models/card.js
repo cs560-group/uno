@@ -15,6 +15,7 @@ class Card{
         this.suit = suit
         this.type = "";
         this.isWild = isWild;
+        this.points = typeof(this.value) === typeof(0) ? this.value : this.isWild ? 50 : 20;
     }
 
     changeSuit(suit){

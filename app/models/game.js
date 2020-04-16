@@ -1,4 +1,5 @@
 const { Collection , Deck } = require('./collection')
+const Bot = require('player').Bot
 
 class Game{
     constructor(id, io, players=[], duration=15){
@@ -312,4 +313,32 @@ class Game{
     }    
 }
 
-module.exports = Game;
+class SingleMode extends Game{
+    constructor(id, io, player, numPlayers, difficulty){
+        super(id, io)
+
+        this.addPlayer(player);
+        for(let i = 0; i < numPlayers - 1; i++){
+            let name = `Bot-${i + 1}`
+            let bot = new Bot(name, this, difficulty)
+            this.addPlayer(bot)
+        }
+        this.player = this.players[0]
+    }
+
+    update(){
+        let game = this.getState()
+        let data = player.getState(true)
+        data.game = game
+        this.emitTo(this.player, 'update', data)
+    }
+
+    broadcast(event, data={}){
+        this.emitTo(this.player, event, data)
+    }
+}
+
+module.exports = {
+    Game: Game,
+    SingleMode: SingleMode
+};
