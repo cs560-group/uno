@@ -85,9 +85,9 @@ class Bot extends Player{
 
                 if(card.card.isWild){
                     let color = this.chooseColor()
-                    this.game.playCard(card.index, color)
+                    return this.game.playCard(card.index, color)
                 }else{
-                    this.game.playCard(card.index)
+                    return this.game.playCard(card.index)
                 }
             }
         }

@@ -391,12 +391,42 @@ class SingleMode extends Game{
         super(id, io)
 
         this.addPlayer(player);
-        for(let i = 0; i < numPlayers - 1; i++){
-            let name = `Bot-${i + 1}`
+        for(let i = 1; i < numPlayers; i++){
+            let name = `Bot-${i}`
             let bot = new Bot(name, this, difficulty)
             this.addPlayer(bot)
         }
         this.player = this.players[0]
+    }
+
+    nextTurn(){
+        super.nextTurn()
+
+        if(this.currentPlayer.isBot){
+            let delay = 5000 + Math.floor(Math.random() * 5000)
+            setTimeout(this.botTurn, delay)
+        }
+    }
+
+    botTurn(){
+        let bot = this.currentPlayer
+        if(this.bot.isBot){
+            if(this.challengeActive){
+                let doesChallenge = bot.challenge()
+                this.challenge(doesChallenge)
+            }else{
+                let turn = bot.playCard()
+                if(turn){
+                    this.nextTurn()
+                }else{
+                    this.passCurrentTurn()
+                    if(this.currentPlayer === bot){
+                        bot.playCard()
+                        this.nextTurn()
+                    }
+                }
+            }
+        }
     }
 
     update(){
@@ -414,4 +444,4 @@ class SingleMode extends Game{
 module.exports = {
     Game: Game,
     SingleMode: SingleMode
-};
+}

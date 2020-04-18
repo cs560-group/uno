@@ -1,11 +1,17 @@
 const { v4: uuidv4 } = require("uuid");
-const Game = require("../models/game");
+const {Game, SingleMode} = require("../models/game");
 
 const games = {};
 const gameController = {};
 
 gameController.createAndStartGame = (io, players) => {
     const game = new Game(generateGameId(), io, players);
+    games[game.id] = game;
+    game.start();
+}
+
+gameController.createSinglePlayerGame = (io, player, numPlayers, difficulty) => {
+    const game = new SingleMode(generateGameId(), io, player, numPlayers, difficulty);
     games[game.id] = game;
     game.start();
 }
