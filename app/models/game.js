@@ -382,7 +382,22 @@ class Game{
      */
     emitTo(player, event, data) {
         this.io.to(player.id).emit(event, data);
-    }    
+    }
+    
+    unoButtonClick(player) {
+        if(player.hand.count() == 1 && this.player.clickUno != true) {
+            this.currentPlayer.clickUno == true;
+        } else {
+            for(let i = 0; i < this.players.length; i++) {
+                if(players[i].hand.count() == 1 && players[i].clickUno != true){
+                    this.draw(this.players[i], 2);
+                } else {
+                    this.draw(player, 2); 
+                }
+            }
+        }
+    }
+    
 }
 
 module.exports = Game;
