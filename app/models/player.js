@@ -8,7 +8,6 @@ class Player{
         this.myTurn = false
         this.left = null
         this.right = null
-        this.clickUno = false;
     }
 
     setLeft(player){
