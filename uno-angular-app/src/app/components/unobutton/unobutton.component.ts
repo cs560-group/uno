@@ -10,22 +10,12 @@ import { GameService } from '@app/services/game.service';
 })
 export class UnobuttonComponent implements OnInit {
 
-  challenge: any;
-
   constructor(private gameService: GameService) { }
 
-  ngOnInit() {  
-
-    this.gameService.challenge.subscribe(challenge => {
-      this.challenge = challenge;
-    });
-
-  }
+  ngOnInit() {}
 
   unobutton() {
-    if(!this.challenge) {
-      this.gameService.unoButton();
-    }
+    this.gameService.unoButton();
   }
 
 }
