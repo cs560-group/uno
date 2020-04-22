@@ -7,7 +7,7 @@ import { CardComponent } from '@app/components/card/card.component';
 import { LobbyComponent } from '@app/components/lobby/lobby.component';
 import { Routes, RouterModule } from '@angular/router';
 import {MatToolbarModule} from '@angular/material/toolbar';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { NoopAnimationsModule, BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { GameService } from '@app/services/game.service';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
@@ -26,7 +26,9 @@ import { PlayersComponent } from './components/players/players.component';
 import { PlayerComponent } from './components/player/player.component';
 import { firstpageComponent } from './components/firstpage/firstpage.component';
 import { secondpageComponent } from './components/secondpage/secondpage.component';
-
+import { UnobuttonComponent } from './components/unobutton/unobutton.component';
+import { singlemodeComponent } from './components/singlemode/singlemode.component';
+import {MatCheckboxModule, MatSelectModule, MatRadioModule} from '@angular/material';
 
 const config: SocketIoConfig = { url: 'http://localhost:8080', options: {} };
 const appRoutes: Routes = [
@@ -47,6 +49,8 @@ const appRoutes: Routes = [
     PlayerComponent,
     firstpageComponent,
     secondpageComponent,
+    UnobuttonComponent,
+    singlemodeComponent,
   ],
   imports: [
     BrowserModule,
@@ -63,7 +67,11 @@ const appRoutes: Routes = [
     NoopAnimationsModule,
     MatProgressSpinnerModule,
     FormsModule,
-    SocketIoModule.forRoot(config)
+    SocketIoModule.forRoot(config),
+    MatRadioModule,
+    BrowserAnimationsModule,
+    MatCheckboxModule,
+    MatSelectModule
   ],
   providers: [GameService],
   bootstrap: [AppComponent]

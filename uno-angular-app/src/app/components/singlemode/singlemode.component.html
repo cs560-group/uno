@@ -1,0 +1,21 @@
+<div class="secondpage-div">
+    
+    <img id="backgroundimg" src="assets\image\logobackground.png" alt="background picture">
+
+    <mat-card class = "participants">
+    <mat-radio-group aria-label="Select an option" >
+        How many players do you wish to play with? <br/> <br/>
+        <mat-radio-button value="1"><mat-icon>person</mat-icon>One player</mat-radio-button>
+        <mat-radio-button value="2"><mat-icon>people_alt</mat-icon>Two player</mat-radio-button>
+    </mat-radio-group>
+    </mat-card>
+
+
+    <mat-card class="singlemat">
+        Choose a game mode <br/> <br/>
+    <button mat-button class="single" type="submit" (click)="mode()"><mat-icon>person</mat-icon> Easy mode</button>
+    <button mat-button name="multi" type="submit" (click)="mode()"><mat-icon>emoji_objects</mat-icon> Intermediate mode</button>
+    <button mat-button name="multi" type="submit" (click)="mode()"><mat-icon>extension</mat-icon> Difficult mode</button>
+    </mat-card>
+
+</div>
