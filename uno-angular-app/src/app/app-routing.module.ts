@@ -5,13 +5,16 @@ import { GameComponent } from '@app/components/game/game.component';
 import { RegistrationComponent } from './components/registration/registration.component';
 import { firstpageComponent } from './components/firstpage/firstpage.component';
 import { secondpageComponent } from './components/secondpage/secondpage.component';
+import { singlemodeComponent } from './components/singlemode/singlemode.component';
 
 const routes: Routes = [
   { path: "", component: firstpageComponent },
   { path: "mode", component: secondpageComponent },
+  { path: "singlemode", component: singlemodeComponent },
   { path: "register", component: RegistrationComponent },
   { path: "lobby/:username", component: LobbyComponent },
   { path: "game/:id", component: GameComponent },
+  { path: "games/", component: GameComponent },
 ];
 
 @NgModule({
