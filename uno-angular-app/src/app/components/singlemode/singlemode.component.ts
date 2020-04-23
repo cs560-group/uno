@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { MatCheckboxModule, MatSelectModule} from '@angular/material';
+import { Socket } from 'ngx-socket-io';
+import UserService from '@app/services/user.service';
 
 @Component({
   selector: 'app-singlemode',
@@ -9,13 +11,29 @@ import { MatCheckboxModule, MatSelectModule} from '@angular/material';
 })
 export class singlemodeComponent implements OnInit {
 
-  constructor(private router: Router) {}
+  private num: number = 0;
+  private difficulty: number = 0;
 
-  ngOnInit() {}
+  constructor(private socket: Socket, private userService: UserService, private router: Router) {}
 
-  
-  mode(): void {
-    this.router.navigate(["games"]);
+  ngOnInit() {
+    this.socket.on("start", gameId => this.router.navigate(["game", gameId]));
+    this.userService.username = "Player" 
   }
 
+  setNum(num: number){
+    this.num = num;
+  }
+
+  setDifficulty(diff: number){
+    this.difficulty = diff;
+  }
+
+  startGame(){
+    if(this.num > 0 && this.difficulty > 0){
+      let data = {name: this.userService.username, numPlayers: this.num, difficulty: this.difficulty};
+      console.log(data);
+      this.socket.emit("singlePlayer", data);
+    }
+  }
 }

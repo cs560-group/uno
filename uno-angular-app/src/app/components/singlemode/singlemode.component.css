@@ -21,21 +21,20 @@
 }
 
 .participants{
-    position: absolute;
-    top: 35%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    margin: 10px;
     flex-direction: column;
 }
 
-.singlemat{
-    position: absolute;
-    top: 55%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    margin: 10px;
+.difficulty{
     flex-direction: column;
+}
+
+.container{
+    position: absolute;
+    top: 30vh;
+    width: 60vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
  .mat-radio-button ~ .mat-radio-button {

@@ -1,5 +1,5 @@
 const { Collection , Deck } = require('./collection')
-const Bot = require('player').Bot
+const Bot = require('./player').Bot
 
 class Game{
     constructor(id, io, players=[], duration=15){
@@ -37,8 +37,8 @@ class Game{
         this.createRing();
         this.currentPlayer = this.players[Math.floor(Math.random()*this.players.length)];
         this.currentPlayer.myTurn = true;
-        this.turn = 1;
         this.dealInitialHands();
+        this.turn = 1;
         this.discardTopOfDeck();
         this.broadcast("start", this.id);
         this.countdown();
@@ -414,30 +414,28 @@ class SingleMode extends Game{
         this.player = this.players[0]
     }
 
-    nextTurn(){
-        super.nextTurn()
+    nextTurn(incrementTurn=false){
+        super.nextTurn(incrementTurn)
 
-        if(this.currentPlayer.isBot){
-            let delay = 5000 + Math.floor(Math.random() * 5000)
-            setTimeout(this.botTurn, delay)
+        if(this.currentPlayer.isBot && this.turn > 0){
+            let delay = 3000 + Math.floor(Math.random() * 5000)
+            setTimeout(this.botTurn, delay, this.currentPlayer, this)
         }
     }
 
-    botTurn(){
-        let bot = this.currentPlayer
-        if(this.bot.isBot){
-            if(this.challengeActive){
+    botTurn(bot, self=this){
+        if(bot.isBot){
+            if(self.challengeActive){
                 let doesChallenge = bot.challenge()
-                this.challenge(doesChallenge)
+                self.challenge(doesChallenge)
             }else{
                 let turn = bot.playCard()
                 if(turn){
-                    this.nextTurn()
+                    self.nextTurn()
                 }else{
-                    this.passCurrentTurn()
-                    if(this.currentPlayer === bot){
-                        bot.playCard()
-                        this.nextTurn()
+                    self.passCurrentTurn()
+                    if(self.currentPlayer === bot){
+                        self.botTurn(bot, self.this)
                     }
                 }
             }
@@ -446,7 +444,7 @@ class SingleMode extends Game{
 
     update(){
         let game = this.getState()
-        let data = player.getState(true)
+        let data = this.player.getState(true)
         data.game = game
         this.emitTo(this.player, 'update', data)
     }

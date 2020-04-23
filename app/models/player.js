@@ -8,7 +8,6 @@ class Player{
         this.myTurn = false
         this.left = null
         this.right = null
-        this.clickUno = false;
     }
 
     setLeft(player){
@@ -57,7 +56,7 @@ class Player{
 
 class Bot extends Player{
     constructor(name, game, difficulty){
-        super(null, name);
+        super(name, name);
         this.game = game;
         this.difficulty = difficulty;
         this.isBot = true;
@@ -82,19 +81,19 @@ class Bot extends Player{
                 return false;
             }else{
                 
-                let card = this.chooseCard()
+                let card = this.chooseCard(playableCards)
 
                 if(card.card.isWild){
                     let color = this.chooseColor()
-                    return this.game.playCard(card.index, color)
+                    return this.game.play(card.index, color)
                 }else{
-                    return this.game.playCard(card.index)
+                    return this.game.play(card.index)
                 }
             }
         }
     }
 
-    chooseCard(){
+    chooseCard(playableCards){
         let card
 
         if(this.game.currentPlayerHasPassed){
@@ -131,7 +130,7 @@ class Bot extends Player{
         let blue = {color: 'blue', count: 0, points: 0}
         let colors = [red, green, yellow, blue]
 
-        for(let card of this.hands.card){
+        for(let card of this.hand.cards){
             let color = card.suit
             if(color === 'red'){
                 red.count ++
@@ -155,7 +154,9 @@ class Bot extends Player{
 
         let colors = this.getColors()
 
-        let currentColor = this.game.discard.getTopCard().suit
+        let currentColor = this.game.discards.getTopCard().suit
+
+        let color
 
         if(this.difficulty === 1){
             let color = colors[Math.floor(Math.random() * colors.length)]
@@ -182,20 +183,18 @@ class Bot extends Player{
     }
 
     challenge(){
-        if(this.myTurn){
-            if(this.game.discard.getTopCard().value === "+4"){
-                if(this.difficulty === 1){
+        if(this.myTurn && this.game.challengeActive){
+            if(this.difficulty === 1){
+                return true
+            }else if(this.difficulty === 2){
+                let choice = [true, false];
+                return choice[Math.floor(Math.random() * choice.length)]
+            }else if(this.difficulty === 3){
+                let prevPlayer = this.game.direction === 0 ? this.right : this.left
+                if(prevPlayer.hand.count() > 5){
                     return true
-                }else if(this.difficulty === 2){
-                    let choice = [true, false];
-                    return choice[Math.floor(Math.random() * choice.length)]
-                }else if(this.difficulty === 3){
-                    let prevPlayer = this.game.direction === 0 ? this.right : this.left
-                    if(prevPlayer.hand.count() > 4){
-                        return true
-                    }else{
-                        return false
-                    }
+                }else{
+                    return false
                 }
             }
         }

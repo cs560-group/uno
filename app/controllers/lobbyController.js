@@ -1,4 +1,4 @@
-const Player = require('../models/player');
+const Player = require('../models/player').Player;
 const GameController = require('./GameController')
 
 let queue = []
@@ -26,12 +26,11 @@ lobbyController.handleConnection = (io, socket, name, createAndStartGame) => {
     }
 }
 
-lobbyController.createSinglePlayerGame = (io, socket, name, numPlayers, difficulty, createAndStartSingleGame) => {
-    const newPlayer = new Player(socket.id, name)
+lobbyController.createSinglePlayerGame = (io, socket, data, createAndStartSingleGame) => {
+    const newPlayer = new Player(socket.id, data.name);
     socket.emit("playerId", socket.id)
-    lobbyController.sendLobbyUpdate(io)
 
-    createAndStartSingleGame(io, newPlayer, numPlayers, difficulty)
+    createAndStartSingleGame(io, newPlayer, data.numPlayers, data.difficulty)
 }
 
 lobbyController.sendLobbyUpdate = (io) => {
@@ -41,7 +40,7 @@ lobbyController.sendLobbyUpdate = (io) => {
 
 lobbyController.addSocketListeners = (socket) => {
     socket.on('newPlayer', name => lobbyController.handleConnection(lobbyController.io, socket, name, lobbyController.createAndStartGame));
-    socket.on('singlePlayer', name => lobbyController.createSinglePlayerGame(lobbyController.io, socket, name, GameController.createSinglePlayerGame));
+    socket.on('singlePlayer', data => lobbyController.createSinglePlayerGame(lobbyController.io, socket, data, GameController.createSinglePlayerGame));
 }
 
 function lobbyHasEnoughForGame() {
