@@ -94,28 +94,29 @@ class Bot extends Player{
     }
 
     chooseCard(playableCards){
+        let cards = playableCards
         let card
 
         if(this.game.currentPlayerHasPassed){
-            card = {card: this.hand.getCard(this.hand.count() - 1), index: this.hand.count() -1}
+            card = {card: this.hand.getCard(this.hand.count() - 1), index: this.hand.count() - 1}
         }else{
             if(this.difficulty === 1){
-                playableCards.push(false);
-                card = this.playableCards[Math.floor(Math.random() * playableCards.length)]
+                cards.push(false);
+                card = this.cards[Math.floor(Math.random() * cards.length)]
             }else if(this.difficulty === 2){
-                playableCards.sort((a,b) => {return b.points - a.points})
-                if(playableCards.length > 1){
-                    card = this.playableCards[Math.floor(Math.random() * playableCards.length / 2)]
+                cards.sort((a,b) => {return b.points - a.points})
+                if(cards.length > 1){
+                    card = this.cards[Math.floor(Math.random() * cards.length / 2)]
                 }else{
-                    card = this.playableCards[0]
+                    card = this.cards[0]
                 }               
             }else if(this.difficulty === 3){
-                playableCards.sort((a,b) => {return b.points - a.points})
+                cards.sort((a,b) => {return b.points - a.points})
                 let i = 0;
-                card = playableCards[i]
-                while(card.value === "+4" && playableCards.length > 1){
+                card = cards[i]
+                while(card.value === "+4" && cards.length > 1){
                     i++
-                    card = playableCards[i]
+                    card = cards[i]
                 }
             }
         }

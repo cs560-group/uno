@@ -247,8 +247,7 @@ class Game{
     /**
      * Attempts to play card from current player's hand.
      * @param {number} card_index 
-     * @returns {Boolean} true if card is played
-     * @returns {Boolean} false if it cannot be played
+     * @returns {Boolean} true if card is played, false if it cannot be played
      */
     play(card_index, suit) {
         let card = this.currentPlayer.hand.getCard(card_index)
@@ -270,6 +269,7 @@ class Game{
             this.currentPlayer.hand.sendCard(card_index, this.discards, true);
             this.readCard(card)
             return true;
+            
         }
         return false;
     }
@@ -414,6 +414,15 @@ class SingleMode extends Game{
         this.player = this.players[0]
     }
 
+    start(){
+        super.start()
+
+        if(this.currentPlayer.isBot && this.turn > 0){
+            let delay = 3000 + Math.floor(Math.random() * 5000)
+            setTimeout(this.botTurn, delay, this.currentPlayer, this)
+        }
+    }
+
     nextTurn(incrementTurn=false){
         super.nextTurn(incrementTurn)
 
@@ -435,7 +444,7 @@ class SingleMode extends Game{
                 }else{
                     self.passCurrentTurn()
                     if(self.currentPlayer === bot){
-                        self.botTurn(bot, self.this)
+                        self.botTurn(bot, self)
                     }
                 }
             }

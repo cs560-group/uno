@@ -21,7 +21,7 @@
         </mat-card>
 
         <mat-card>
-            <button mat-button name="start" type="submit" (click)="startGame()">Start</button>
+            <button mat-button name="start" type="submit" (click)="startGame()" [disabled]="num * difficulty === 0">Start</button>
         </mat-card>
     </div>
     

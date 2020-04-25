@@ -32,7 +32,8 @@ import {MatCheckboxModule, MatSelectModule, MatRadioModule} from '@angular/mater
 
 const config: SocketIoConfig = { url: 'http://localhost:8080', options: {} };
 const appRoutes: Routes = [
-  { path: 'lobby', component: LobbyComponent }
+  { path: 'lobby', component: LobbyComponent },
+  { path: 'singlemode', component: singlemodeComponent}
 ];
 
 

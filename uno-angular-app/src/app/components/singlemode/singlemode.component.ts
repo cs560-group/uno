@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { MatCheckboxModule, MatSelectModule} from '@angular/material';
 import { Socket } from 'ngx-socket-io';
 import UserService from '@app/services/user.service';
@@ -13,12 +13,14 @@ export class singlemodeComponent implements OnInit {
 
   private num: number = 0;
   private difficulty: number = 0;
+  private userId: string = "";
 
   constructor(private socket: Socket, private userService: UserService, private router: Router) {}
 
   ngOnInit() {
+    this.socket.on("playerId", assignedId => this.userId = assignedId);
     this.socket.on("start", gameId => this.router.navigate(["game", gameId]));
-    this.userService.username = "Player" 
+    this.userService.username = "Player";
   }
 
   setNum(num: number){
