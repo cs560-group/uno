@@ -19,6 +19,7 @@ class Game{
         this.turnDuration = duration;
         this.turnSecondsRemaining = this.turnDuration;
         this.currentPlayerHasPassed = false;
+        this.shouldCallUno = [];
         this.challengeActive = false;
         this.done = false;
     }
@@ -26,6 +27,15 @@ class Game{
     addPlayer(player){
         this.players.push(player);
         this.createRing();
+    }
+
+    getPlayer(id){
+        for(let player of this.players){
+            if(player.id === id){
+                return player
+            }
+        }
+        return false;
     }
 
     /**
@@ -104,10 +114,13 @@ class Game{
         this.currentPlayerHasPassed = false;        
         this.currentPlayer = this.nextPlayer()
         this.currentPlayer.myTurn = true
-        
         this.skip = false
         if(incrementTurn){
             this.turn++
+        }
+
+        if(this.currentPlayer.hand.count() === 2){
+            this.shouldCallUno.push(this.currentPlayer);
         }
         
         this.resetCountdownTimer();
@@ -214,6 +227,11 @@ class Game{
             return false;
         }
         this.currentPlayerHasPassed = true;
+
+        if(this.shouldCallUno.length > 0 && this.shouldCallUno[0] !== this.currentPlayer){
+            this.shouldCallUno.shift()        
+        }
+
         const dealtCard = this.dealCurrentPlayer();
         if (!this.isPlayable(dealtCard))
             this.nextTurn();
@@ -245,7 +263,8 @@ class Game{
 
     /**
      * Attempts to play card from current player's hand.
-     * @param {number} card_index 
+     * @param {number} card_index
+     * @param {string} suit
      * @returns {Boolean} true if card is played
      * @returns {Boolean} false if it cannot be played
      */
@@ -268,6 +287,11 @@ class Game{
 
             this.currentPlayer.hand.sendCard(card_index, this.discards, true);
             this.readCard(card)
+
+            if(this.shouldCallUno.length > 0 && this.shouldCallUno[0] !== this.currentPlayer){
+                this.shouldCallUno.shift()        
+            }
+
             return true;
         }
         return false;
@@ -324,6 +348,32 @@ class Game{
         }
         this.challengeActive = false;
     }
+
+    callUno(player){
+        if(player === this.currentPlayer && this.shouldCallUno.includes(player)){
+            if(this.shouldCallUno[0] === player){
+                this.shouldCallUno.shift()
+            }else{
+                this.shouldCallUno.pop()
+            }
+        }
+        
+        if(this.shouldCallUno.length > 0){
+            for(let i = 0; i < this.shouldCallUno.length; i++){
+                let p = this.shouldCallUno[i]
+                if(player !== p && p.hand.count() === 1){
+                    this.draw(p, 4);
+                    if(i === 0){
+                        this.shouldCallUno.shift()
+                    }else{
+                        this.shouldCallUno.pop()
+                    }
+                }
+            }
+        }
+    }
+
+    
 
     currentPlayerHasWon() {
         return this.getCurrentPlayer().hand.count() === 0;
@@ -382,7 +432,8 @@ class Game{
      */
     emitTo(player, event, data) {
         this.io.to(player.id).emit(event, data);
-    }    
+    }
+    
 }
 
 module.exports = Game;

@@ -44,12 +44,25 @@ gameController.broadcastMessage = (data) => {
     }
 }
 
+
+gameController.unoButton = (data) => {
+    const game = games[data.gameId];
+    let player = game.getPlayer(data.playerId);
+    if (game && player){
+        game.callUno(player)
+    }
+}
+
+
 gameController.addSocketListeners = (socket) => {
     socket.on("pass", gameController.pass);
     socket.on("playCard", gameController.playCard);
     socket.on("message", gameController.broadcastMessage);
-    socket.on("challenge", gameController.challenge)
+    socket.on("challenge", gameController.challenge);
+    socket.on("unoButton", gameController.unoButton);
 }
+
+
 
 function generateGameId() {
     return uuidv4();

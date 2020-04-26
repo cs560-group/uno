@@ -91,4 +91,8 @@ export class GameService {
             this._selectSuit.next({select: false, index: 0});
         }
     }
+
+    unoButton(){
+        this.socket.emit("unoButton", { gameId: this._state.getValue().game.id, playerId: this._state.getValue().id });
+    }
 }

@@ -26,6 +26,7 @@ import { PlayersComponent } from './components/players/players.component';
 import { PlayerComponent } from './components/player/player.component';
 import { firstpageComponent } from './components/firstpage/firstpage.component';
 import { secondpageComponent } from './components/secondpage/secondpage.component';
+import { UnobuttonComponent } from './components/unobutton/unobutton.component';
 
 
 const config: SocketIoConfig = { url: 'http://localhost:8080', options: {} };
@@ -47,6 +48,7 @@ const appRoutes: Routes = [
     PlayerComponent,
     firstpageComponent,
     secondpageComponent,
+    UnobuttonComponent,
   ],
   imports: [
     BrowserModule,
