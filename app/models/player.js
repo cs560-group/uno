@@ -79,13 +79,13 @@ class Bot extends Player{
 
             if(playableCards.length === 0){
                 return false;
-            }else{
-                
+            }else{                
                 let card = this.chooseCard(playableCards)
-
-                if(card.card.isWild){
+                if(!card){
+                    return false;
+                }else if(card.card.isWild){
                     let color = this.chooseColor()
-                    return this.game.play(card.index, color)
+                    return this.game.play(card.index, color.color)
                 }else{
                     return this.game.play(card.index)
                 }
@@ -96,19 +96,20 @@ class Bot extends Player{
     chooseCard(playableCards){
         let cards = playableCards
         let card
-
         if(this.game.currentPlayerHasPassed){
             card = {card: this.hand.getCard(this.hand.count() - 1), index: this.hand.count() - 1}
         }else{
             if(this.difficulty === 1){
                 cards.push(false);
-                card = this.cards[Math.floor(Math.random() * cards.length)]
+                let index = Math.floor(Math.random() * cards.length)
+                card = cards[index]
             }else if(this.difficulty === 2){
-                cards.sort((a,b) => {return b.points - a.points})
+                cards.sort((a,b) => {return b.points - a.points})                
                 if(cards.length > 1){
-                    card = this.cards[Math.floor(Math.random() * cards.length / 2)]
+                    let index = Math.floor(Math.random() * cards.length / 2)
+                    card = cards[index]
                 }else{
-                    card = this.cards[0]
+                    card = cards[0]
                 }               
             }else if(this.difficulty === 3){
                 cards.sort((a,b) => {return b.points - a.points})
@@ -120,7 +121,6 @@ class Bot extends Player{
                 }
             }
         }
-
         return card
     }
 
@@ -147,26 +147,21 @@ class Bot extends Player{
                 blue.points += card.points
             }
         }
-
         return colors
     }
 
     chooseColor(){
-
         let colors = this.getColors()
-
         let currentColor = this.game.discards.getTopCard().suit
-
         let color
-
         if(this.difficulty === 1){
-            let color = colors[Math.floor(Math.random() * colors.length)]
+            color = colors[Math.floor(Math.random() * colors.length)]
             while(color.color === currentColor){
                 color = colors[Math.floor(Math.random() * colors.length)]
             }
         }else if(this.difficulty === 2){
             colors.sort((a,b) => {b.count - a.count})
-            let color = colors[Math.floor(Math.random() * colors.length / 2)]
+            color = colors[Math.floor(Math.random() * colors.length / 2)]
             while(color.color === currentColor){
                 color = colors[Math.floor(Math.random() * colors.length / 2)]
             }
@@ -179,7 +174,6 @@ class Bot extends Player{
                 color = colors[i].color
             }
         }
-
         return color
     }
 

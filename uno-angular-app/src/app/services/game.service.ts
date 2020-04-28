@@ -53,6 +53,7 @@ export class GameService {
             this._winner.next(data.winner);
             this._gameIsOver.next(true);
             this._gameId.next("");
+            this.socket.emit("end", this._state.getValue().game.id)
         })
 
         this.socket.on("suit", (data) => {

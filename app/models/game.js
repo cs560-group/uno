@@ -358,12 +358,14 @@ class Game{
      * Sends data to each player from its own "perspective"
      */
     update(){
-        let game = this.getState()
-        this.players.forEach(player => {
-            let data = player.getState(true)
-            data.game = game
-            this.emitTo(player, 'update', data)
-        });
+        if(!game.done){
+            let game = this.getState()
+            this.players.forEach(player => {
+                let data = player.getState(true)
+                data.game = game
+                this.emitTo(player, 'update', data)
+            });
+        }        
     }
 
     /**
@@ -423,28 +425,31 @@ class SingleMode extends Game{
         }
     }
 
-    nextTurn(incrementTurn=false){
+    nextTurn(incrementTurn=true){
         super.nextTurn(incrementTurn)
 
         if(this.currentPlayer.isBot && this.turn > 0){
-            let delay = 3000 + Math.floor(Math.random() * 5000)
+            let delay = 1000 + Math.floor(Math.random() * 6000)
             setTimeout(this.botTurn, delay, this.currentPlayer, this)
         }
     }
 
-    botTurn(bot, self=this){
+    botTurn(bot, game=this){
         if(bot.isBot){
-            if(self.challengeActive){
+            if(game.challengeActive){
                 let doesChallenge = bot.challenge()
-                self.challenge(doesChallenge)
+                game.challenge(doesChallenge)
+                game.nextTurn();
             }else{
                 let turn = bot.playCard()
-                if(turn){
-                    self.nextTurn()
+                if(game.currentPlayerHasWon()){
+                    game.finish()
+                }else if(turn){
+                    game.nextTurn()
                 }else{
-                    self.passCurrentTurn()
-                    if(self.currentPlayer === bot){
-                        self.botTurn(bot, self)
+                    game.passCurrentTurn()
+                    if(game.currentPlayer === bot){
+                        game.botTurn(bot, game)
                     }
                 }
             }
