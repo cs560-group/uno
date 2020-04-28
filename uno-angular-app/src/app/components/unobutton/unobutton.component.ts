@@ -10,38 +10,12 @@ import { GameService } from '@app/services/game.service';
 })
 export class UnobuttonComponent implements OnInit {
 
-  cards = [];
-  count: number = 0;
-  isMyTurn: boolean = false;
-  private hasPassed: boolean = false;
-
-  selectSuit: any;
-  challenge: any;
-
   constructor(private gameService: GameService) { }
 
-  ngOnInit() { 
-    this.gameService.cards.subscribe(updatedCards => this.cards = updatedCards);
-    this.gameService.isMyTurn.subscribe(isTurn => {
-      this.isMyTurn = isTurn
-      this.hasPassed = false;
-    });
-
-    this.gameService.selectSuit.subscribe(select => {
-      this.selectSuit = select;
-    });
-
-    this.gameService.challenge.subscribe(challenge => {
-      this.challenge = challenge;
-    });
-
-  }
+  ngOnInit() {}
 
   unobutton() {
-    console.log("***** DEBUG: unobutton.component.ts print test")
-    if(!this.challenge) {
-      this.gameService.unoButton();
-    }
+    this.gameService.unoButton();
   }
 
 }

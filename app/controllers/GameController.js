@@ -50,11 +50,13 @@ gameController.broadcastMessage = (data) => {
     }
 }
 
-gameController.unoButton = (info) => {
-    console.log("***** DEBUG: GameController.js print test")
-    const game = games[info.gameId];
-    if (game && game.getCurrentPlayer().id === info.playerId)
-        game.unoButtonClick();
+
+gameController.unoButton = (data) => {
+    const game = games[data.gameId];
+    let player = game.getPlayer(data.playerId);
+    if (game && player){
+        game.callUno(player)
+    }
 }
 
 gameController.purgeGame = (gameid) => {
@@ -67,7 +69,7 @@ gameController.addSocketListeners = (socket) => {
     socket.on("message", gameController.broadcastMessage);
     socket.on("challenge", gameController.challenge);
     socket.on("end", gameController.purgeGame);
-    //socket.on("unoButton", gameController.unoButton);
+    socket.on("unoButton", gameController.unoButton);
 }
 
 function generateGameId() {

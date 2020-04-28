@@ -95,7 +95,6 @@ export class GameService {
     }
 
     unoButton(){
-        console.log("***** DEBUG: game.service.ts print test")
         this.socket.emit("unoButton", { gameId: this._state.getValue().game.id, playerId: this._state.getValue().id });
     }
 }
