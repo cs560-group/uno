@@ -494,7 +494,7 @@ class SingleMode extends Game{
     }
 
     botUno(game=this){
-        let options = [true, true, true, true, false];
+        let options = [true, true, true, false, false];
         let priority = options[Math.floor(Math.random() * options.length)]
 
         if(priority && game.currentPlayer.isBot && game.shouldCallUno.includes(game.currentPlayer)){

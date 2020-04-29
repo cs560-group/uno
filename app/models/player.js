@@ -103,17 +103,14 @@ class Bot extends Player{
                 cards.push(false);
                 card = this.selectRandom(cards)
             }else if(this.difficulty === 2){
-                cards.sort((a,b) => {return b.points - a.points})                
-                if(cards.length > 1){
-                    card = this.selectRandom(cards, 0.5)
-                }else{
-                    card = cards[0]
-                }               
+                cards.sort((a,b) => {return b.points - a.points})   
+                card = this.selectRandom(cards, 0.5)             
             }else if(this.difficulty === 3){
                 cards.sort((a,b) => {return b.points - a.points})
                 let i = 0;
                 card = cards[i]
-                while(card.value === "+4" && cards.length > 1){
+                let wild4count = this.countCard("+4", "wild")
+                while(card.value === "+4" && cards.length > wild4count){
                     i++
                     card = cards[i]
                 }
@@ -198,7 +195,7 @@ class Bot extends Player{
             let options = [true, false, false];
             return this.selectRandom(options);
         }else if(this.difficulty == 2){
-            let options = [true, true, true, true, true, true, true, false];
+            let options = [true, true, true, true, false];
             return this.selectRandom(options);
         }else if(this.difficulty == 3){
             return true;
@@ -209,7 +206,17 @@ class Bot extends Player{
         if(mod <= 1 && mod >= 0){
             let index = Math.floor(Math.random() * collection.length * mod)
             return collection[index]
-        }        
+        }       
+    }
+
+    countCard(value, suit){
+        let i = 0
+        for(let card in this.hand.cards){
+            if(card.value === value && card.suit == suit){
+                i++
+            }
+        }
+        return i
     }
 }
 
