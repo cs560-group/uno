@@ -105,6 +105,8 @@ class Deck extends Collection{
         super(cards);
         if(this.cards.length === 0){
             this.initDeck()
+        }else{
+            this.resetDeck()
         }
     }
 
@@ -137,7 +139,7 @@ class Deck extends Collection{
                 this.addCard(new Card("+2", suit));
                 this.addCard(new Card("reverse", suit));
             }
-        }
+        }      
 
         /**
          * Initialize Wild cards and Wild Draw 4 cards
@@ -150,6 +152,15 @@ class Deck extends Collection{
         }
 
         this.shuffle()
+    }
+
+    resetDeck(){
+        for(let card of this.cards){
+            if(card.value == "+4" || card.value == "wild"){
+                card.isWild = true;
+                card.suit = "wild";
+            }
+        }
     }
 
     /**

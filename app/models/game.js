@@ -380,9 +380,9 @@ class Game{
      * Broadcasts winner to all players
      */
     finish() {
-        this.done = true;
         this.update();
         this.broadcast("gameOver", { winner: this.getCurrentPlayer().name });
+        this.done = true;
     }
 
     /**
