@@ -50,7 +50,6 @@ gameController.broadcastMessage = (data) => {
     }
 }
 
-
 gameController.unoButton = (data) => {
     const game = games[data.gameId];
     let player = game.getPlayer(data.playerId);
@@ -60,14 +59,15 @@ gameController.unoButton = (data) => {
 }
 
 gameController.purgeGame = (gameid) => {
-    delete games[gameid];
+    let game = games[gameid]
+    removeGame(game)
 }
 
 gameController.addSocketListeners = (socket) => {
     socket.on("pass", gameController.pass);
     socket.on("playCard", gameController.playCard);
     socket.on("message", gameController.broadcastMessage);
-    socket.on("challenge", gameController.challenge);
+    socket.on("challenge", gameController.challenge);   
     socket.on("end", gameController.purgeGame);
     socket.on("unoButton", gameController.unoButton);
 }
