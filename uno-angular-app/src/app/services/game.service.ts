@@ -53,6 +53,7 @@ export class GameService {
             this._winner.next(data.winner);
             this._gameIsOver.next(true);
             this._gameId.next("");
+            this.socket.emit("end", this._state.getValue().game.id)
         })
 
         this.socket.on("suit", (data) => {
@@ -86,6 +87,7 @@ export class GameService {
     }
 
     playCard(card_index: number, suit: string = null) {
+        console.log("playcard")
         this.socket.emit("playCard", { gameId: this._state.getValue().game.id, playerId: this._state.getValue().id, card_index: card_index, suit: suit});
         if(suit){
             this._selectSuit.next({select: false, index: 0});

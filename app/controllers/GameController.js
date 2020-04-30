@@ -1,11 +1,17 @@
 const { v4: uuidv4 } = require("uuid");
-const Game = require("../models/game");
+const {Game, SingleMode} = require("../models/game");
 
 const games = {};
 const gameController = {};
 
 gameController.createAndStartGame = (io, players) => {
     const game = new Game(generateGameId(), io, players);
+    games[game.id] = game;
+    game.start();
+}
+
+gameController.createSinglePlayerGame = (io, player, numPlayers, difficulty) => {
+    const game = new SingleMode(generateGameId(), io, player, numPlayers, difficulty);
     games[game.id] = game;
     game.start();
 }
@@ -17,7 +23,7 @@ gameController.pass = (info) => {
 }
 
 gameController.playCard = (data) => {
-    const game = games[data.gameId];
+    const game =    games[data.gameId];
     if (game && game.getCurrentPlayer().id === data.playerId && data.card_index >= 0 && game.play(data.card_index, data.suit)) {
         if(game.currentPlayerHasWon()) {
             game.finish();
@@ -44,7 +50,6 @@ gameController.broadcastMessage = (data) => {
     }
 }
 
-
 gameController.unoButton = (data) => {
     const game = games[data.gameId];
     let player = game.getPlayer(data.playerId);
@@ -53,16 +58,21 @@ gameController.unoButton = (data) => {
     }
 }
 
+gameController.purgeGame = (gameid) => {
+    let game = games[gameid]
+    if(game){
+        removeGame(game)
+    }    
+}
 
 gameController.addSocketListeners = (socket) => {
     socket.on("pass", gameController.pass);
     socket.on("playCard", gameController.playCard);
     socket.on("message", gameController.broadcastMessage);
-    socket.on("challenge", gameController.challenge);
+    socket.on("challenge", gameController.challenge);   
+    socket.on("end", gameController.purgeGame);
     socket.on("unoButton", gameController.unoButton);
 }
-
-
 
 function generateGameId() {
     return uuidv4();

@@ -11,7 +11,7 @@ app.use(express.static('app/static'))
 const lobbyController = require('./controllers/lobbyController');
 const gameController = require("./controllers/gameController");
 
-lobbyController.initialize(io, gameController.createAndStartGame);
+lobbyController.initialize(io, gameController.createAndStartGame, gameController.createSinglePlayerGame);
 
 //socket connection handlers
 io.on('connection', socket => addSocketListeners(socket));

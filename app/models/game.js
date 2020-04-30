@@ -1,4 +1,6 @@
 const { Collection , Deck } = require('./collection')
+const Card = require('./card')
+const Bot = require('./player').Bot
 
 class Game{
     constructor(id, io, players=[], duration=15){
@@ -9,6 +11,7 @@ class Game{
         this.players = players;
         this.turn = 0;
         this.currentPlayer = null;
+        this.prevPlayer = null;
         /**
          * Directions:
          * 1 - left
@@ -46,8 +49,8 @@ class Game{
         this.createRing();
         this.currentPlayer = this.players[Math.floor(Math.random()*this.players.length)];
         this.currentPlayer.myTurn = true;
-        this.turn = 1;
         this.dealInitialHands();
+        this.turn = 1;
         this.discardTopOfDeck();
         this.broadcast("start", this.id);
         this.countdown();
@@ -79,7 +82,7 @@ class Game{
     }
 
     /**
-     * Counts down play timer, and broadcasts timer to all players. 
+     * Counts down play timer, and broadcasts timer to all players.
      * Automatically goes to the next turn if it reaches 0.
      */
     countdown() {
@@ -111,18 +114,18 @@ class Game{
      * Sets new current player, increments turn count and resets countdown timer
      */
     nextTurn(incrementTurn=true) {
-        this.currentPlayerHasPassed = false;        
+        this.currentPlayerHasPassed = false;    
+        this.currentPlayer.myTurn = false    
+        this.prevPlayer = this.currentPlayer
         this.currentPlayer = this.nextPlayer()
         this.currentPlayer.myTurn = true
         this.skip = false
         if(incrementTurn){
             this.turn++
-        }
-
-        if(this.currentPlayer.hand.count() === 2){
-            this.shouldCallUno.push(this.currentPlayer);
-        }
-        
+            if(this.currentPlayer.hand.count() === 2){
+                this.shouldCallUno.push(this.currentPlayer);
+            }
+        }        
         this.resetCountdownTimer();
         this.update();
     }
@@ -132,7 +135,6 @@ class Game{
      * @returns {Player} Next Player
      */
     nextPlayer(){
-        this.currentPlayer.myTurn = false
         if(this.direction === 1){
             if(this.skip){
                 return this.currentPlayer.left.left
@@ -152,6 +154,9 @@ class Game{
      * @returns {Card} A copy of the dealt card
      */
     dealCurrentPlayer() {
+        if(this.deck.count() === 0){
+            this.resetDeck();
+        }
         return this.deal(this.getCurrentPlayer());
     }
 
@@ -233,8 +238,9 @@ class Game{
         }
 
         const dealtCard = this.dealCurrentPlayer();
-        if (!this.isPlayable(dealtCard))
+        if (!this.isPlayable(dealtCard)){
             this.nextTurn();
+        }            
         this.update();
         return true;
     }
@@ -265,8 +271,7 @@ class Game{
      * Attempts to play card from current player's hand.
      * @param {number} card_index
      * @param {string} suit
-     * @returns {Boolean} true if card is played
-     * @returns {Boolean} false if it cannot be played
+     * @returns {Boolean} true if card is played, false if it cannot be played
      */
     play(card_index, suit) {
         let card = this.currentPlayer.hand.getCard(card_index)
@@ -293,6 +298,7 @@ class Game{
             }
 
             return true;
+            
         }
         return false;
     }
@@ -331,17 +337,10 @@ class Game{
      */
     challenge(doesChallenge){
         if(doesChallenge){
-            let prevPlayer;
-            if(this.direction === 1){
-                prevPlayer = this.currentPlayer.right;
-            }else{
-                prevPlayer = this.currentPlayer.left;
-            }
-
-            if(this.checkHand(prevPlayer,this.discards.getCard(1))){
+            if(this.checkHand(this.prevPlayer,this.discards.getCard(1))){
                 this.draw(this.currentPlayer, 6);
             }else{
-                this.draw(prevPlayer, 4);
+                this.draw(this.prevPlayer, 4);
             }
         }else{
             this.draw(this.currentPlayer, 4);
@@ -349,31 +348,29 @@ class Game{
         this.challengeActive = false;
     }
 
-    callUno(player){
-        if(player === this.currentPlayer && this.shouldCallUno.includes(player)){
-            if(this.shouldCallUno[0] === player){
-                this.shouldCallUno.shift()
+    callUno(player, game=this){
+        if(player === game.currentPlayer && game.shouldCallUno.includes(player)){
+            if(game.shouldCallUno[0] === player){
+                game.shouldCallUno.shift()
             }else{
-                this.shouldCallUno.pop()
+                game.shouldCallUno.pop()
             }
         }
         
-        if(this.shouldCallUno.length > 0){
-            for(let i = 0; i < this.shouldCallUno.length; i++){
-                let p = this.shouldCallUno[i]
+        if(game.shouldCallUno.length > 0){
+            for(let i = 0; i < game.shouldCallUno.length; i++){
+                let p = game.shouldCallUno[i]
                 if(player !== p && p.hand.count() === 1){
-                    this.draw(p, 4);
+                    game.draw(p, 4);
                     if(i === 0){
-                        this.shouldCallUno.shift()
+                        game.shouldCallUno.shift()
                     }else{
-                        this.shouldCallUno.pop()
+                        game.shouldCallUno.pop()
                     }
                 }
             }
         }
-    }
-
-    
+    }    
 
     currentPlayerHasWon() {
         return this.getCurrentPlayer().hand.count() === 0;
@@ -383,9 +380,9 @@ class Game{
      * Broadcasts winner to all players
      */
     finish() {
-        this.done = true;
         this.update();
         this.broadcast("gameOver", { winner: this.getCurrentPlayer().name });
+        this.done = true;
     }
 
     /**
@@ -412,7 +409,7 @@ class Game{
             let data = player.getState(true)
             data.game = game
             this.emitTo(player, 'update', data)
-        });
+        });     
     }
 
     /**
@@ -421,7 +418,9 @@ class Game{
      * @param {*} data 
      */
     broadcast(event, data={}) {
-        this.players.forEach(player => this.io.to(player.id).emit(event, data));
+        if(!this.done){
+            this.players.forEach(player => this.io.to(player.id).emit(event, data));
+        }
     }
 
     /**
@@ -431,9 +430,106 @@ class Game{
      * @param {*} data 
      */
     emitTo(player, event, data) {
-        this.io.to(player.id).emit(event, data);
+        if(!this.done){
+            this.io.to(player.id).emit(event, data);
+        }        
     }
     
 }
 
-module.exports = Game;
+class SingleMode extends Game{
+    constructor(id, io, player, numPlayers, difficulty){
+        super(id, io)
+
+        this.addPlayer(player);
+        this.player = player;
+        this.bots = []
+        for(let i = 1; i < numPlayers; i++){
+            let name = `Bot-${i}`
+            let bot = new Bot(name, this, difficulty)
+            this.addPlayer(bot)
+            this.bots.push(bot)
+        }       
+    }
+
+    start(){
+        super.start()
+
+        if(this.currentPlayer.isBot && this.turn > 0){
+            let delay = this.getDelay(2000)
+            setTimeout(this.botTurn, delay, this.currentPlayer, this)
+        }
+    }
+
+    nextTurn(incrementTurn=true){
+        super.nextTurn(incrementTurn)
+
+        let delay = this.getDelay()
+        setTimeout(this.botUno, delay / 2, this)        
+        if(this.currentPlayer.isBot && this.turn > 0){
+            setTimeout(this.botTurn, delay, this.currentPlayer, this)
+        }
+    }
+
+    botTurn(bot, game=this){
+        if(bot.isBot){
+            if(game.challengeActive){
+                let doesChallenge = bot.challenge()
+                game.challenge(doesChallenge)
+                game.nextTurn();
+            }else{
+                let turn = bot.playCard()
+                if(game.currentPlayerHasWon()){
+                    game.finish()
+                }else if(turn){
+                    game.nextTurn()
+                }else{
+                    game.passCurrentTurn()
+                    if(game.currentPlayer === bot){
+                        game.botTurn(bot, game)
+                    }
+                }
+            }
+        }
+    }
+
+    botUno(game=this){
+        let options = [true, true, true, false, false];
+        let priority = options[Math.floor(Math.random() * options.length)]
+
+        if(priority && game.currentPlayer.isBot && game.shouldCallUno.includes(game.currentPlayer)){
+            game.callUno(game.currentPlayer)
+        }
+
+        for(let bot of game.bots){
+            if(game.shouldCallUno.length > 0 && ((game.prevPlayer && game.prevPlayer.hand.count() == 1) || game.shouldCallUno.includes(bot))){
+                if(bot.callUno()){
+                    let delay = game.getDelay(0, 2000);
+                    setTimeout(game.callUno, delay, bot, game)
+                }
+            }   
+        }        
+    }
+
+    update(){
+        let game = this.getState()
+        let data = this.player.getState(true)
+        data.game = game
+        this.emitTo(this.player, 'update', data)
+    }
+
+    broadcast(event, data={}){
+        if(!this.done){
+            this.emitTo(this.player, event, data)
+        }
+    }
+
+    getDelay(min=1000, max=7000){
+        return min + Math.floor(Math.random() * (max - min))
+    }
+}
+
+module.exports = {
+    Game: Game,
+    SingleMode: SingleMode
+}

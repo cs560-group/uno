@@ -13,6 +13,10 @@ export class secondpageComponent implements OnInit {
   ngOnInit() {}
 
   mode(): void {
+    this.router.navigate(["singlemode"]);
+  }
+
+  mode2(): void {
     this.router.navigate(["register"]);
   }
 }

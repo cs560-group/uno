@@ -1,0 +1,28 @@
+<div class="secondpage-div">
+    
+    <img id="backgroundimg" src="assets\image\logobackground.png" alt="background picture">
+
+    <div class="container">
+        <mat-card class = "participants">
+            <mat-radio-group aria-label="Select an option" >
+                How many players do you wish to play with? <br/> <br/>
+                <mat-radio-button value="1" (click)="setNum(2)"><mat-icon>person</mat-icon>One player</mat-radio-button>
+                <mat-radio-button value="2" (click)="setNum(3)"><mat-icon>people_alt</mat-icon>Two players</mat-radio-button>
+            </mat-radio-group>
+        </mat-card>
+
+        <mat-card class = "difficulty">
+            <mat-radio-group aria-label="Select an option" >
+                Choose a Difficulty Level <br/> <br/>
+                <mat-radio-button value="1" (click)="setDifficulty(1)"><mat-icon>person</mat-icon>Easy</mat-radio-button>
+                <mat-radio-button value="2" (click)="setDifficulty(2)"><mat-icon>emoji_objects</mat-icon>Intermediate</mat-radio-button>
+                <mat-radio-button value="3" (click)="setDifficulty(3)"><mat-icon>extension</mat-icon>Hard</mat-radio-button>
+            </mat-radio-group>
+        </mat-card>
+
+        <mat-card>
+            <button mat-button name="start" type="submit" (click)="startGame()" [disabled]="num * difficulty === 0">Start</button>
+        </mat-card>
+    </div>
+    
+</div>
